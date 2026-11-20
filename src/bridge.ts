@@ -31,10 +31,40 @@ const SAMPLE_CLIPBOARD = [
   "const ring = new Wheel(8);",
 ];
 
+/** In-memory stand-in for the notes folder (the real app writes .txt files). */
+const devNotes = new Map<string, { text: string; updated: number }>();
+(window as any).__seedNotes = (items: { id: string; text: string; updated: number }[]) =>
+  items.forEach((n) => devNotes.set(n.id, { text: n.text, updated: n.updated }));
+
+function devTitlePreview(text: string): [string, string] {
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n) + "…" : s);
+  return [cut(lines[0] ?? "", 60), cut(lines.slice(1, 4).join(" "), 140)];
+}
+
 async function devInvoke(cmd: string, args?: Record<string, unknown>): Promise<unknown> {
   devCalls.push({ cmd, args });
-  if (cmd === "clipboard_history") return SAMPLE_CLIPBOARD;
-  return undefined;
+  const id = args?.id as string;
+  switch (cmd) {
+    case "clipboard_history":
+      return SAMPLE_CLIPBOARD;
+    case "notes_dir":
+      return "C:\\Users\\you\\Documents\\Wheelie Notes";
+    case "notes_list":
+      return [...devNotes.entries()]
+        .map(([nid, n]) => ({ id: nid, ...(([title, preview]) => ({ title, preview }))(devTitlePreview(n.text)), updated: n.updated }))
+        .sort((a, b) => b.updated - a.updated);
+    case "notes_read":
+      return devNotes.get(id)?.text ?? "";
+    case "notes_write":
+      devNotes.set(id, { text: args?.text as string, updated: Date.now() });
+      return undefined;
+    case "notes_delete":
+      devNotes.delete(id);
+      return undefined;
+    default:
+      return undefined;
+  }
 }
 
 export async function invoke<T = void>(cmd: string, args?: Record<string, unknown>): Promise<T> {

@@ -44,11 +44,11 @@ export const units: Tool = {
       const f = unit(st.from);
       const t = unit(st.to);
       if (Number.isNaN(n)) {
-        result.textContent = "–";
+        result.replaceChildren("–");
         table.replaceChildren();
         return;
       }
-      result.textContent = `${formatNum(convert(n, f, t))} ${t.id}`;
+      result.replaceChildren(formatNum(convert(n, f, t)), h("span", { class: "unit-name" }, t.label));
       table.replaceChildren(
         ...cat()
           .units.filter((u) => u.id !== st.from)

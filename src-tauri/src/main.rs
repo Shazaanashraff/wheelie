@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod clip;
+mod notes;
+mod notes_core;
 #[cfg(windows)]
 mod hook_win;
 #[allow(dead_code)]
@@ -267,6 +269,11 @@ fn main() {
             clipboard_clear,
             paste_text,
             open_target,
+            notes::notes_dir,
+            notes::notes_list,
+            notes::notes_read,
+            notes::notes_write,
+            notes::notes_delete,
         ])
         .on_window_event(|window, event| {
             // Alt+F4 etc. must hide, not quit: Wheelie lives in the tray.

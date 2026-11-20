@@ -19,7 +19,13 @@ The trigger keys, theme, accent colour and which tools are in the ring (and thei
 
 ### Tools (v1)
 
-Calculator (type the math, Enter copies the result) · Clock (stopwatch, timer, pomodoro) · Notes (multiple, autosaved) · To-do · Clipboard history (click to paste) · Unit converter · Links · App launcher
+- **Calculator**: its own keypad and design (nothing from Windows is launched). Type on the keyboard or click keys, live result as you type, `fx` for scientific keys, history. `=` copies the result.
+- **Notes**: every note is a plain **`.txt` file** in `Documents\Wheelie Notes`, so you can open, back up or sync them with anything. The Notes tool shows a searchable history (newest first, with a preview and date), autosaves as you type, and never creates empty files. Deleting asks for a second click.
+- **Clock** (stopwatch, timer, pomodoro) · **To-do** · **Clipboard history** (click to paste) · **Unit converter** · **Links** · **App launcher**
+
+![All screens](docs/previews/00-overview.png)
+
+More screens are in [`docs/previews`](docs/previews).
 
 ## Get it on Windows
 
@@ -47,7 +53,7 @@ npm run dev            # then hold the middle mouse button, or Space, to open th
 npm test               # calculator parser + unit conversion tests
 ```
 
-(`cargo test --manifest-path src-tauri/Cargo.toml` runs the trigger state-machine tests.)
+(`cargo test --manifest-path src-tauri/Cargo.toml` runs the trigger state-machine and notes-file tests.)
 
 ## How it works
 
@@ -57,6 +63,8 @@ src-tauri/src/
   hook_win.rs   Windows low-level keyboard + mouse hooks that feed trigger.rs
   winutil.rs    Focus handling, paste (Ctrl+V injection), clipboard format checks
   clip.rs       Clipboard history thread (in memory only)
+  notes_core.rs Notes as .txt files: list/read/write/delete (unit tested, path-traversal safe)
+  notes.rs      Tauri commands wrapping notes_core
   main.rs       Window placement, tray, commands exposed to the UI
 src/
   ring.ts       Ring rendering + slice hit-testing
@@ -72,7 +80,7 @@ One transparent, always-on-top window does everything. On a hold, Rust moves it 
 - **Global hooks.** Wheelie installs Windows low-level keyboard and mouse hooks. They look only at Space/Alt and the mouse button you chose, and nothing is recorded or sent anywhere. The logic is in `trigger.rs` and `hook_win.rs` if you want to check.
 - **The trigger is swallowed.** While Wheelie is running, Alt+Space no longer opens the window menu, and the chosen mouse button no longer works normally in other apps. Change or turn off either in Settings.
 - **Clipboard history is memory-only** and skips copies flagged by password managers. It is cleared when you quit.
-- **Your data** (notes, to-dos, links, settings) is stored locally in the app's WebView storage. There is no account and no network use.
+- **Your data** stays on your machine. Notes are `.txt` files in `Documents\Wheelie Notes`; to-dos, links, settings and calculator history live in the app's local WebView storage. There is no account and no network use.
 - **Status:** the Windows-only code compiles cleanly for Windows, and the logic and UI are tested, but the finished app has not yet been run on a real Windows machine. Expect to find a rough edge or two in focus handling.
 
 ## Ideas for next

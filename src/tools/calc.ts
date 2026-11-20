@@ -1,108 +1,175 @@
-import { h } from "../dom.ts";
+import { h, icon } from "../dom.ts";
+import { ICONS } from "../icons.ts";
 import { store } from "../store.ts";
 import type { Tool } from "./types.ts";
-import { evaluate, format } from "./calcparse.ts";
+import { INITIAL, equals, keyFromEvent, preview, press, pretty, type CalcState } from "./calcstate.ts";
 
 interface Entry {
   expr: string;
   result: string;
 }
 
+type Kind = "num" | "op" | "fn" | "eq" | "clear" | "util";
+interface Key {
+  label: string;
+  key: string;
+  kind: Kind;
+  title?: string;
+}
+
+/** Clicking a key must not move focus off the calculator, or typing and Space/Enter would hit the button. */
+const noFocus = (e: Event) => e.preventDefault();
+
+const k = (label: string, key: string, kind: Kind, title?: string): Key => ({ label, key, kind, title });
+
+const SCI: Key[][] = [
+  [k("(", "(", "fn"), k(")", ")", "fn"), k("xʸ", "^", "fn", "Power"), k("n!", "!", "fn", "Factorial")],
+  [k("π", "π", "fn", "Pi"), k("√", "fn:sqrt", "fn", "Square root"), k("x²", "sq", "fn", "Square"), k("ln", "fn:ln", "fn", "Natural log")],
+];
+
+const MAIN: Key[][] = [
+  [k("C", "clear", "clear", "Clear (C)"), k("⌫", "back", "util", "Backspace"), k("%", "%", "op", "Percent"), k("÷", "/", "op")],
+  [k("7", "7", "num"), k("8", "8", "num"), k("9", "9", "num"), k("×", "*", "op")],
+  [k("4", "4", "num"), k("5", "5", "num"), k("6", "6", "num"), k("−", "-", "op")],
+  [k("1", "1", "num"), k("2", "2", "num"), k("3", "3", "num"), k("+", "+", "op")],
+  [k("±", "neg", "util", "Change sign"), k("0", "0", "num"), k(".", ".", "num"), k("=", "equals", "eq")],
+];
+
 export const calc: Tool = {
   id: "calc",
   name: "Calculator",
-  size: [360, 480],
+  size: [340, 560],
   mount(root) {
+    let state: CalcState = INITIAL;
     let history = store.get<Entry[]>("calc.history", []);
-    const input = h("input", {
-      class: "calc-input",
-      placeholder: "Type the math…",
-      spellcheck: false,
-      autocomplete: "off",
-    });
-    const live = h("div", { class: "calc-live" });
-    const list = h("div", { class: "calc-history" });
+    let sci = store.get<boolean>("calc.sci", false);
+    let flash = "";
+    let flashTimer: number | undefined;
 
+    const exprEl = h("div", { class: "calc-expr-line" });
+    const resultEl = h("div", { class: "calc-result" });
+    const noteEl = h("div", { class: "calc-note" });
+    const keypad = h("div", { class: "calc-keys" });
+    const sciKeys = h("div", { class: "calc-keys sci" });
+    const histPanel = h("div", { class: "calc-history-panel", hidden: true });
+    const sciBtn = h("button", { class: "calc-tool", tabIndex: -1, onMousedown: noFocus, title: "Scientific keys", onClick: () => ((sci = !sci), store.set("calc.sci", sci), draw()) }, "fx");
+    const histBtn = h("button", { class: "calc-tool", tabIndex: -1, onMousedown: noFocus, title: "History", onClick: () => toggleHistory() }, icon(ICONS.clock, 16));
+    const copyBtn = h("button", { class: "calc-tool", tabIndex: -1, onMousedown: noFocus, title: "Copy result", onClick: () => copy() }, icon(ICONS.clipboard, 16));
+
+    const keyButtons = new Map<string, HTMLButtonElement[]>();
+    const makeKey = (def: Key) => {
+      const b = h("button", { class: `ckey ${def.kind}`, title: def.title ?? "", tabIndex: -1, onMousedown: noFocus, onClick: () => onKey(def.key) }, def.label);
+      keyButtons.set(def.key, [...(keyButtons.get(def.key) ?? []), b]);
+      return b;
+    };
+    keypad.append(...MAIN.flat().map(makeKey));
+    sciKeys.append(...SCI.flat().map(makeKey));
+
+    const shownResult = () => (state.done ? state.expr : preview(state.expr) ?? "");
+
+    function copy() {
+      const r = shownResult();
+      if (!r) return;
+      navigator.clipboard?.writeText(r).catch(() => {});
+      say("Copied");
+    }
+    function say(msg: string) {
+      flash = msg;
+      clearTimeout(flashTimer);
+      flashTimer = window.setTimeout(() => ((flash = ""), draw()), 1400);
+      draw();
+    }
+
+    function draw() {
+      sciKeys.hidden = !sci;
+      sciBtn.classList.toggle("on", sci);
+      if (state.done) {
+        exprEl.textContent = pretty(state.lastExpr) + " =";
+        resultEl.textContent = state.expr;
+      } else {
+        exprEl.textContent = pretty(state.expr) || " ";
+        resultEl.textContent = preview(state.expr) ?? (state.expr ? "" : "0");
+      }
+      const len = resultEl.textContent!.length;
+      resultEl.className = "calc-result" + (len > 14 ? " xs" : len > 10 ? " sm" : "") + (state.done ? " done" : "") + (state.error ? " err" : "");
+      noteEl.textContent = state.error || flash;
+      noteEl.className = "calc-note" + (state.error ? " err" : "");
+    }
+
+    function onKey(key: string) {
+      if (key === "equals") {
+        const out = equals(state);
+        state = out.state;
+        if (out.result !== undefined && state.lastExpr && out.result !== state.lastExpr) {
+          history = [{ expr: state.lastExpr, result: out.result }, ...history.filter((e) => e.expr !== state.lastExpr)].slice(0, 40);
+          store.set("calc.history", history);
+          navigator.clipboard?.writeText(out.result).catch(() => {});
+          say("Copied");
+          return;
+        }
+      } else {
+        state = press(state, key);
+        flash = "";
+      }
+      draw();
+    }
+
+    function toggleHistory() {
+      histPanel.hidden = !histPanel.hidden;
+      keypad.hidden = sciKeys.hidden = !histPanel.hidden;
+      if (histPanel.hidden) draw();
+      else renderHistory();
+    }
     function renderHistory() {
-      list.replaceChildren(
-        ...history.map((e) =>
-          h(
-            "button",
-            {
-              class: "calc-row",
-              onClick: () => {
-                input.value = e.result;
-                input.focus();
-                update();
-              },
-              title: "Use this result",
-            },
-            h("span", { class: "calc-expr" }, e.expr),
-            h("span", { class: "calc-res" }, "= " + e.result),
-          ),
-        ),
+      histPanel.replaceChildren(
+        h("div", { class: "calc-hist-head" }, h("span", {}, "History"), history.length ? h("button", { class: "link", textContent: "Clear", onClick: () => ((history = []), store.set("calc.history", history), renderHistory()) }) : null),
+        ...(history.length
+          ? history.map((e) =>
+              h(
+                "button",
+                {
+                  class: "calc-row",
+                  title: "Use this result",
+                  onClick: () => {
+                    state = { expr: e.result, done: true, lastExpr: e.expr, error: "" };
+                    toggleHistory();
+                  },
+                },
+                h("span", { class: "calc-expr" }, pretty(e.expr)),
+                h("span", { class: "calc-res" }, "= " + e.result),
+              ),
+            )
+          : [h("div", { class: "empty" }, "Your calculations will appear here.")]),
       );
     }
 
-    function update() {
-      const src = input.value.trim();
-      if (!src) {
-        live.textContent = "";
-        live.classList.remove("error");
+    root.classList.add("calc");
+    root.tabIndex = -1;
+    root.addEventListener("keydown", (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c" && !getSelection()?.toString()) {
+          e.preventDefault();
+          copy();
+        }
         return;
       }
-      try {
-        live.textContent = "= " + format(evaluate(src));
-        live.classList.remove("error");
-      } catch (err) {
-        // Half-typed expressions are normal; stay quiet until Enter.
-        live.textContent = "";
-        live.classList.remove("error");
-        void err;
+      const key = keyFromEvent(e.key);
+      if (!key) return;
+      e.preventDefault();
+      if (!histPanel.hidden) toggleHistory();
+      for (const b of keyButtons.get(key) ?? []) {
+        b.classList.add("pressed");
+        setTimeout(() => b.classList.remove("pressed"), 110);
       }
-    }
-
-    input.addEventListener("input", update);
-    input.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter") return;
-      const src = input.value.trim();
-      if (!src) return;
-      try {
-        const result = format(evaluate(src));
-        navigator.clipboard?.writeText(result).catch(() => {});
-        history = [{ expr: src, result }, ...history.filter((x) => x.expr !== src)].slice(0, 30);
-        store.set("calc.history", history);
-        input.value = "";
-        live.textContent = `Copied ${result}`;
-        live.classList.remove("error");
-        renderHistory();
-      } catch (err) {
-        live.textContent = (err as Error).message;
-        live.classList.add("error");
-      }
+      onKey(key);
     });
 
     root.append(
-      h("div", { class: "calc-top" }, input, live),
-      list,
-      h(
-        "div",
-        { class: "foot" },
-        h("span", {}, "Enter copies the result · try 15% of, sqrt(2), 2pi, 5!"),
-        history.length
-          ? h("button", {
-              class: "link",
-              textContent: "Clear",
-              onClick: () => {
-                history = [];
-                store.set("calc.history", history);
-                renderHistory();
-              },
-            })
-          : null,
-      ),
+      h("div", { class: "calc-display" }, h("div", { class: "calc-tools" }, sciBtn, histBtn, h("span", { class: "grow" }), copyBtn), exprEl, resultEl, noteEl),
+      h("div", { class: "calc-body" }, histPanel, sciKeys, keypad),
     );
-    renderHistory();
-    queueMicrotask(() => input.focus());
+    draw();
+    queueMicrotask(() => root.focus());
+    return () => clearTimeout(flashTimer);
   },
 };
