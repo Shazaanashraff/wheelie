@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CURIOUS, GAZE_RANGE, blinkDelay, gaze, hopDelay, isDoubleBlink, pointerTookOver } from "./mascotmath.ts";
+import { CURIOUS, GAZE_RANGE, blinkDelay, gaze, hopDelay, hopPixels, isDoubleBlink, pixelGaze, pointerTookOver } from "./mascotmath.ts";
 
 test("with the pointer on top of it, the character looks straight ahead", () => {
   assert.deepEqual(gaze(0, 0), { x: 0, y: 0 });
@@ -48,4 +48,21 @@ test("the curious look is in time order and ends facing forward", () => {
 test("a small pointer wobble does not interrupt the scripted look, a real move does", () => {
   assert.equal(pointerTookOver(3, 3), false);
   assert.equal(pointerTookOver(30, 0), true);
+});
+
+test("the pixel eyes move in whole pixels: nothing for a nudge, one pixel for a clear look", () => {
+  assert.deepEqual(pixelGaze({ x: 0, y: 0 }), { x: 0, y: 0 });
+  assert.deepEqual(pixelGaze({ x: 0.2, y: 0.1 }), { x: 0, y: 0 });
+  assert.deepEqual(pixelGaze({ x: 0.9, y: 0 }), { x: 1, y: 0 });
+  assert.deepEqual(pixelGaze({ x: -0.9, y: 0.2 }), { x: -1, y: 0 });
+  assert.deepEqual(pixelGaze({ x: 0, y: -1 }), { x: 0, y: -1 });
+  assert.deepEqual(pixelGaze({ x: 1, y: 1 }), { x: 1, y: 1 });
+});
+
+test("a hop is a whole number of pixels, never negative and never more than two", () => {
+  assert.equal(hopPixels(0), 0);
+  assert.equal(hopPixels(-0.4), 0);
+  assert.equal(hopPixels(0.5), 1);
+  assert.equal(hopPixels(1), 2);
+  assert.equal(hopPixels(5), 2);
 });

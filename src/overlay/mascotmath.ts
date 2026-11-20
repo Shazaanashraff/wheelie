@@ -35,3 +35,16 @@ export const CURIOUS: readonly { at: number; x: number; y: number }[] = [
 
 /** True once the pointer has moved far enough from the centre to take over from the scripted look. */
 export const pointerTookOver = (dx: number, dy: number): boolean => Math.hypot(dx, dy) > 8;
+
+/**
+ * Pixel art moves in whole pixels. The eyes turn by at most one pixel sideways (a gentle turn
+ * does nothing; a clear one moves them) and one pixel up or down only for a strong look.
+ */
+export function pixelGaze(g: { x: number; y: number }): { x: -1 | 0 | 1; y: -1 | 0 | 1 } {
+  const x = Math.max(-1, Math.min(1, Math.round(g.x * 1.4))) as -1 | 0 | 1;
+  const y = (Math.abs(g.y) > 0.6 ? Math.sign(g.y) : 0) as -1 | 0 | 1;
+  return { x: x || 0, y: y || 0 };
+}
+
+/** How many whole pixels the character is off the ground for a hop spring value (0 to about 1.2). */
+export const hopPixels = (h: number): number => Math.max(0, Math.min(2, Math.round(h * 1.8)));

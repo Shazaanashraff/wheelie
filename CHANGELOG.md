@@ -19,9 +19,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - An interactive motion gallery (`gallery.html`) for previewing every animation.
 - Start with Windows, with the app living quietly in the tray.
 
-- **Wheelie, the character.** A small wheel-creature lives in the middle of the ring while nothing is hovered. It wakes up and looks around on launch, follows the pointer, blinks, hops and smiles, in the theme's accent colour.
+- **Wheelie, the character.** A little pixel creature lives in the middle of the ring while nothing is hovered. It builds itself up on launch, looks around, then follows the pointer with its eyes, blinks, taps its feet, hops and smiles, in the theme's accent colour. All its movement is in whole pixels.
+- A new app icon, tray icon and sidebar brand: the same character, drawn from one shared sprite. `npm run icons` regenerates the whole icon set.
 - **Tool info in the centre.** Hover a slice and the hub shows what that tool is up to (the timer's time left, to-dos remaining, your last result, how many notes or links you have...), with a progress arc for timers, pomodoro and to-dos.
-- Logo concepts in `docs/design/logo-concepts`.
 
 ### Changed
 

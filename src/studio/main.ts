@@ -1,4 +1,5 @@
 import "../styles/base.css";
+import { wheelieMark } from "../overlay/mark.ts";
 import "../styles/icons.css";
 import "./studio.css";
 import { invoke } from "../core/bridge.ts";
@@ -67,7 +68,7 @@ const nav = h(
 );
 const content = h("main", { class: "content" });
 document.getElementById("app")!.append(
-  h("aside", { class: "sidebar" }, h("div", { class: "brand" }, ic("ring", 26), h("span", {}, "Wheelie")), nav, h("div", { class: "side-foot" }, h("i", { class: "pulse" }), "Wheel is running")),
+  h("aside", { class: "sidebar" }, h("div", { class: "brand" }, wheelieMark(3), h("span", {}, "Wheelie")), nav, h("div", { class: "side-foot" }, h("i", { class: "pulse" }), "Wheel is running")),
   content,
 );
 

@@ -21,6 +21,7 @@ npm run typecheck        # TypeScript, no emit
 npm test                 # all frontend and script tests
 npm run build            # typecheck + production web build into dist/
 npm run tauri build      # installer in src-tauri/target/release/bundle/nsis (Windows)
+npm run icons            # redraw the app icons from the character sprite
 cargo test --manifest-path src-tauri/Cargo.toml   # Rust tests (Windows)
 ```
 

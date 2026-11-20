@@ -1,16 +1,18 @@
 /**
- * The Wheelie character: a small wheel-creature that lives in the centre of the ring.
+ * The Wheelie character: a small pixel creature that lives in the centre of the ring.
  *
- * It is drawn in SVG around (0, 0) and styled with the theme's accent colour. It is alive
- * rather than animated on a loop: its face turns toward the pointer, it blinks at random,
- * hops now and then, and on launch it wakes up and looks around before settling.
+ * It is drawn in SVG around (0, 0) from the sprite in sprite.ts, tinted with the theme's accent.
+ * Everything it does happens in whole pixels, like a sprite on an old screen: its eyes turn a
+ * pixel toward the pointer, it blinks, taps its feet, hops now and then, and on launch it builds
+ * itself up row by row, opens its eyes and looks around.
  *
  * The ring shows it while nothing is hovered, and swaps it for the hovered tool's info.
  * What it does is scaled by the motion setting: Full does everything, Subtle only blinks and
  * fades, Off is a still picture.
  */
-import { SPRINGS, Spring, loop, motionLevel, springEasing } from "../core/motion.ts";
-import { CURIOUS, blinkDelay, gaze, hopDelay, isDoubleBlink, pointerTookOver } from "./mascotmath.ts";
+import { SPRINGS, Spring, loop, motionLevel } from "../core/motion.ts";
+import { CURIOUS, blinkDelay, gaze, hopDelay, hopPixels, isDoubleBlink, pixelGaze, pointerTookOver } from "./mascotmath.ts";
+import { BODY, COLS, EYES, FEET, ROWS, SMILE } from "./sprite.ts";
 
 const NS = "http://www.w3.org/2000/svg";
 const s = <K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number> = {}, cls?: string) => {
@@ -19,10 +21,11 @@ const s = <K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, s
   if (cls) e.setAttribute("class", cls);
   return e;
 };
-const f = (n: number) => n.toFixed(2);
 
-/** Drawn at 27px radius; shown this much bigger so it fills the hub (112px across). */
-const SIZE = 1.3;
+/** CSS pixels per sprite pixel. A whole number keeps the edges sharp: the sprite is 72 by 66, in a hub 112 across. */
+const PX = 6;
+const OX = -(COLS * PX) / 2;
+const OY = -(ROWS * PX) / 2;
 
 export type Mood = "calm" | "happy";
 
@@ -34,57 +37,55 @@ export interface Mascot {
   setMood(m: Mood): void;
   /** Show or hide it (the ring hides it while a slice's info is up). Idle behaviours only run while shown. */
   setShown(on: boolean): void;
-  /** The launch: wake up, look around, hop. */
+  /** The launch: build up, open its eyes, look around, hop. */
   enter(): void;
   destroy(): void;
 }
 
-const MOUTH: Record<Mood, string> = {
-  calm: "M-4.6 6.6Q0 9.8 4.6 6.6",
-  happy: "M-5.6 5.4Q0 12.6 5.6 5.4",
-};
+const pixel = (c: number, r: number, cls: string) => s("rect", { x: OX + c * PX, y: OY + r * PX, width: PX, height: PX }, cls);
 
 export function createMascot(): Mascot {
   // ---- drawing ------------------------------------------------------------
-  const root = s("g", {}, "mascot");
-  const bob = s("g", {}, "m-bob");
-  const body = s("g", {}, "m-body");
+  const root = s("g", { "shape-rendering": "crispEdges" }, "mascot");
+  const body = s("g", {}, "p-body");
 
-  const tire = s("circle", { r: 27 }, "m-tire");
-  // Tread marks cut into the tyre band. They spin; the silhouette stays a clean circle.
-  const tread = s("g", {}, "m-tread");
-  for (let i = 0; i < 12; i++) tread.append(s("rect", { x: -1.5, y: -25.6, width: 3, height: 4.6, rx: 1.5, transform: `rotate(${i * 30})` }, "m-nub"));
-  const face = s("circle", { r: 19 }, "m-face");
-  const shine = s("path", { d: "M-12.6 -9.6A15.2 15.2 0 0 1 -3 -16" }, "m-shine");
+  // One group per row, so the launch can build it up from the feet.
+  const rows: SVGGElement[] = [];
+  BODY.forEach((line, r) => {
+    const row = s("g", {}, "p-row");
+    [...line].forEach((ch, c) => ch !== "." && row.append(pixel(c, r, `px px-${ch}`)));
+    rows.push(row);
+  });
+  const feet = s("g", {}, "p-row");
+  FEET.forEach((line, i) => {
+    const frame = s("g", {}, i === 0 ? "p-feet-a" : "p-feet-b");
+    [...line].forEach((ch, c) => ch !== "." && frame.append(pixel(c, BODY.length, "px px-4")));
+    feet.append(frame);
+  });
+  rows.push(feet);
+  body.append(...rows);
 
-  const look = s("g", {}, "m-look");
-  const eyes = [-6.6, 6.6].map((x) => s("ellipse", { cx: x, cy: -2.2, rx: 3.1, ry: 4.4 }, "m-eye"));
-  for (const e of eyes) {
-    e.style.transformBox = "fill-box";
-    e.style.transformOrigin = "center";
+  // The face is separate from the body so it can turn on its own.
+  const eyes = s("g", {}, "p-eyes");
+  const eye = [s("rect", {}, "px px-eye"), s("rect", {}, "px px-eye"), s("rect", {}, "px px-eye"), s("rect", {}, "px px-eye")];
+  const mouth = SMILE.map(() => s("rect", { width: PX, height: PX }, "px px-eye"));
+  for (const e of eye) {
+    e.setAttribute("width", String(PX));
+    e.setAttribute("height", String(PX));
   }
-  const glad = [-6.6, 6.6].map((x) => s("path", { d: `M${x - 3.2} -0.6Q${x} -6.6 ${x + 3.2} -0.6` }, "m-glad"));
-  const mouth = s("path", { d: MOUTH.calm }, "m-mouth");
-  look.append(...eyes, ...glad, mouth);
+  eyes.append(...eye, ...mouth);
+  root.append(body, eyes);
 
-  body.append(tire, tread, face, shine, look);
-  bob.append(body);
-  root.append(bob);
-  for (const n of [root, body, tread]) {
-    (n as SVGElement).style.transformBox = "fill-box";
-    (n as SVGElement).style.transformOrigin = "center";
-  }
-
-  // ---- live motion --------------------------------------------------------
-  const gx = new Spring(0, SPRINGS.soft);
-  const gy = new Spring(0, SPRINGS.soft);
+  // ---- state --------------------------------------------------------------
   const hop = new Spring(0, SPRINGS.bouncy);
-  const spin = new Spring(0, SPRINGS.smooth);
   const shown = new Spring(1, SPRINGS.snappy);
-  const all = [gx, gy, hop, spin, shown];
+  const all = [hop, shown];
 
   let on = true;
   let mood: Mood = "calm";
+  let blinking = false;
+  let gx = 0;
+  let gy = 0;
   let scripted = false;
   let dead = false;
   const timers = new Set<number>();
@@ -97,17 +98,34 @@ export function createMascot(): Mascot {
     return id;
   };
 
+  /** Place the eyes and smile for the current look, blink and mood. */
+  const drawFace = () => {
+    const happy = mood === "happy";
+    const cols = [EYES.left + gx, EYES.right + gx];
+    const top = EYES.top + gy;
+    // Calm: two tall eyes. Blinking: only the lower pixel, so a thin line. Happy: only the upper pixel, with a smile.
+    const spec: [number, number, boolean][] = [
+      [cols[0], top, !blinking || happy],
+      [cols[0], top + 1, !happy],
+      [cols[1], top, !blinking || happy],
+      [cols[1], top + 1, !happy],
+    ];
+    spec.forEach(([c, r, vis], i) => {
+      eye[i].setAttribute("x", String(OX + c * PX));
+      eye[i].setAttribute("y", String(OY + r * PX));
+      eye[i].setAttribute("visibility", vis ? "visible" : "hidden");
+    });
+    SMILE.forEach(([c, r], i) => {
+      mouth[i].setAttribute("x", String(OX + (c + gx) * PX));
+      mouth[i].setAttribute("y", String(OY + r * PX));
+      mouth[i].setAttribute("visibility", happy ? "visible" : "hidden");
+    });
+  };
+
   const apply = () => {
-    const h = hop.value;
-    body.setAttribute(
-      "transform",
-      `translate(${f(gx.value * 2.2)} ${f(gy.value * 1.6 - 5 * h)}) rotate(${f(gx.value * 5)}) scale(${f(1 - 0.03 * h)} ${f(1 + 0.05 * h)})`,
-    );
-    look.setAttribute("transform", `translate(${f(gx.value * 4.6)} ${f(gy.value * 3.6)})`);
-    tread.setAttribute("transform", `rotate(${f(spin.value)})`);
-    const v = Math.max(0, Math.min(1, shown.value));
-    root.style.opacity = f(v * v); // fades faster than it shrinks, so it is gone before the hub info arrives
-    root.style.transform = `scale(${f(SIZE * (0.55 + 0.45 * Math.max(0, shown.value)))})`;
+    body.setAttribute("transform", `translate(0 ${-hopPixels(hop.value) * PX})`);
+    eyes.setAttribute("transform", `translate(0 ${-hopPixels(hop.value) * PX})`);
+    root.style.opacity = String(Math.max(0, Math.min(1, shown.value)) ** 2); // fades before the hub info arrives
   };
   const tick = (dt: number) => {
     if (dead) return false;
@@ -121,27 +139,36 @@ export function createMascot(): Mascot {
       apply();
     } else loop.add(tick);
   };
-
-  const blink = () => {
-    if (motionLevel() === "off") return;
-    for (const e of eyes) e.animate([{ transform: "scaleY(1)" }, { transform: "scaleY(0.08)" }, { transform: "scaleY(1)" }], { duration: 160, easing: "ease-in-out" });
+  const setLook = (x: number, y: number) => {
+    if (x === gx && y === gy) return;
+    gx = x;
+    gy = y;
+    drawFace();
   };
 
   // ---- idle life ----------------------------------------------------------
+  const blinkOnce = () => {
+    if (motionLevel() === "off") return;
+    blinking = true;
+    drawFace();
+    later(130, () => {
+      blinking = false;
+      drawFace();
+    });
+  };
   const scheduleBlink = () => {
     later(blinkDelay(Math.random()), () => {
       if (on) {
-        blink();
-        if (isDoubleBlink(Math.random())) later(230, blink);
+        blinkOnce();
+        if (isDoubleBlink(Math.random())) later(300, blinkOnce);
       }
       scheduleBlink();
     });
   };
   const doHop = () => {
     hop.set(1);
-    spin.set(spin.target + 120);
     run();
-    later(120, () => {
+    later(140, () => {
       hop.set(0);
       run();
     });
@@ -156,8 +183,7 @@ export function createMascot(): Mascot {
   const setMoodNow = (m: Mood) => {
     if (m === mood) return;
     mood = m;
-    mouth.setAttribute("d", MOUTH[m]);
-    root.classList.toggle("happy", m === "happy");
+    drawFace();
   };
 
   const api: Mascot = {
@@ -168,10 +194,8 @@ export function createMascot(): Mascot {
         if (!pointerTookOver(dx, dy)) return;
         scripted = false;
       }
-      const g = gaze(dx, dy);
-      gx.set(g.x);
-      gy.set(g.y);
-      run();
+      const q = pixelGaze(gaze(dx, dy));
+      setLook(q.x, q.y);
     },
 
     setMood: setMoodNow,
@@ -183,32 +207,31 @@ export function createMascot(): Mascot {
     },
 
     enter() {
-      const level = motionLevel();
-      if (level === "off") return;
-      if (level === "full") {
-        const bounce = springEasing(SPRINGS.bouncy);
-        const soft = springEasing(SPRINGS.soft);
-        body.animate([{ transform: "scale(0.25) rotate(-40deg)" }, { transform: "scale(1) rotate(0)" }], { duration: bounce.duration, easing: bounce.easing, delay: 60, fill: "backwards" });
-        tread.animate([{ transform: "rotate(-170deg)" }, { transform: "rotate(0deg)" }], { duration: soft.duration + 200, easing: soft.easing, delay: 60, fill: "backwards" });
-        // Eyes open a beat after it appears, like waking up.
-        for (const e of eyes) e.animate([{ transform: "scaleY(0.06)" }, { transform: "scaleY(0.06)", offset: 0.7 }, { transform: "scaleY(1)" }], { duration: 380, delay: 120, easing: "ease-out", fill: "backwards" });
-        // Then it has a look around, unless the pointer gets there first.
-        scripted = true;
-        for (const c of CURIOUS)
-          later(c.at, () => {
-            if (!scripted) return;
-            gx.set(c.x);
-            gy.set(c.y);
-            run();
-          });
-        later(CURIOUS.at(-1)!.at + 30, () => {
+      if (motionLevel() !== "full") return;
+      // Build up from the feet, one row at a time, popping in rather than fading.
+      const step = 48;
+      rows.forEach((row, i) => {
+        const fromBottom = rows.length - 1 - i;
+        row.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: 80 + fromBottom * step, easing: "steps(1, start)", fill: "backwards" });
+      });
+      const built = 80 + rows.length * step;
+      // The eyes switch on after it is built.
+      eyes.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: built + 60, easing: "steps(1, start)", fill: "backwards" });
+      // Then it looks around, unless the pointer gets there first.
+      scripted = true;
+      for (const c of CURIOUS)
+        later(built + 60 + c.at, () => {
           if (!scripted) return;
-          scripted = false;
-          setMoodNow("happy");
-          doHop();
-          later(900, () => setMoodNow("calm"));
+          const q = pixelGaze({ x: c.x, y: c.y });
+          setLook(q.x, q.y);
         });
-      }
+      later(built + 60 + CURIOUS.at(-1)!.at + 30, () => {
+        if (!scripted) return;
+        scripted = false;
+        setMoodNow("happy");
+        doHop();
+        later(900, () => setMoodNow("calm"));
+      });
     },
 
     destroy() {
@@ -222,6 +245,7 @@ export function createMascot(): Mascot {
 
   scheduleBlink();
   scheduleHop();
+  drawFace();
   apply();
   return api;
 }

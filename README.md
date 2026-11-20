@@ -52,9 +52,9 @@ Both triggers can be changed in the app under **General**.
 
 ### The centre of the wheel
 
-The middle of the ring is alive. When nothing is hovered, **Wheelie**, a small wheel-creature, lives there: it wakes up and looks around when the ring opens, follows your pointer with its eyes, blinks, hops, and smiles when you hover it. Move onto a slice and the character gives way to what that tool is up to, with a **progress arc** where there is progress to show.
+The middle of the ring is alive. When nothing is hovered, **Wheelie**, a little pixel creature, lives there. It builds itself up row by row when the ring opens, opens its eyes and looks around, then follows your pointer with them (a pixel at a time), blinks, taps its feet, hops now and then, and smiles when you hover it. Move onto a slice and the character gives way to what that tool is up to, with a **progress arc** where there is progress to show.
 
-<p align="center"><img src="docs/images/mascot.png" alt="Wheelie the character, smiling, then the hub showing a running timer and to-do progress" width="760"></p>
+<p align="center"><img src="docs/images/mascot.png" alt="Wheelie the pixel character building up, idle and smiling, then the hub showing a running timer and to-do progress" width="760"></p>
 
 | Tool | What the centre shows |
 | --- | --- |
@@ -68,7 +68,7 @@ The middle of the ring is alive. When nothing is hovered, **Wheelie**, a small w
 | Colours · Passwords · World clock | The current colour · password length · the time in another city |
 | A launcher | Where it goes, and that it opens when you let go |
 
-The character follows the theme's accent colour, and respects the motion setting: **Full** does everything, **Subtle** just blinks, **Off** is a still picture.
+The character takes the theme's accent colour, and respects the motion setting: **Full** does everything, **Subtle** just blinks, **Off** is a still picture. It is also the app's icon.
 
 ### Two parts: the wheel and the app
 

@@ -31,7 +31,7 @@ Windows ─► low-level keyboard/mouse hook (hook_win.rs)
 
 The hub shows one of two things, and swaps between them on a spring as you move across slices:
 
-- **The character** (`overlay/mascot.ts`): drawn in SVG around the origin and tinted with the accent. Its face is driven by springs: the pointer sets where it looks (`mascotmath.ts` maps pointer distance to a gaze, tested), and timers schedule blinks and hops. On launch it plays a short scripted wake-up and look-around, which any real pointer movement cancels. Motion level gates it: Full does everything, Subtle only blinks, Off is static.
+- **The character** (`overlay/mascot.ts`): a pixel sprite defined once in `overlay/sprite.ts` and tinted with the accent. Everything it does is in whole pixels, like an old sprite: the pointer turns its eyes by a pixel (`mascotmath.ts` maps pointer distance to a gaze and quantises it, tested), timers schedule blinks and hops, and on launch it builds itself up row by row and plays a short look-around, which any real pointer movement cancels. Motion level gates it: Full does everything, Subtle only blinks, Off is static.
 - **The tool's info** (`tools/glance.ts`): each slice carries a `glance()` returning a headline, a line under it and an optional 0 to 1 progress. `glance.ts` is a pure function of the stored data and the clock, so it is unit tested; `glanceLive.ts` supplies the real store and fetches what the store lacks (notes, clipboard) when the ring opens. Glances flagged `live` (a running timer) are refreshed four times a second while hovered.
 
 ## Source layout
@@ -59,6 +59,8 @@ src/
     main.ts        Ring/panel state machine, slot activation
     ring.ts        Ring engine: springs, hover lean, Dock-style pull, tilt, launch/choose, the hub
     mascot.ts      The Wheelie character in the hub
+    sprite.ts      The character's pixels, shared with the icon generator
+    mark.ts        The same character as a small static mark (the sidebar brand)
     mascotmath.ts  Where it looks and when it blinks or hops (tested)
     ringmath.ts    Geometry: hit-testing, pointer influence (tested)
     layout.ts      Placing a panel on screen (tested)
@@ -94,6 +96,10 @@ Motion is built on spring physics rather than fixed curves, so it carries moment
 - **Live springs** (`Spring`, stepped by one shared animation loop) drive the wheel: hover lean, the Dock-style pull on neighbouring slices, ring tilt and the choose/dissolve.
 - **Baked springs** turn a spring into a CSS `linear()` easing plus its settle time, exposed as `--spring`, `--spring-snappy` and `--spring-bouncy`, so ordinary CSS transitions get the same feel.
 - A global level (**Full**, **Subtle**, **Off**) and the Windows reduced-motion setting scale all of it down.
+
+## The app icon
+
+The icon is the character, drawn from `overlay/sprite.ts` by `scripts/make-icons.mjs` (`npm run icons`), which writes every PNG and the `.ico` in `src-tauri/icons` with no dependencies. Pixel art goes soft when resized, so each size is drawn at a whole number of icon pixels per sprite pixel: sizes up to 48 px are the bare character (it stays readable in the tray), larger ones sit on a rounded dark tile. Change the sprite, run the script, and the character, tray icon, installer and sidebar all change together.
 
 ## Where data lives
 

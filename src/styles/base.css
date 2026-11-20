@@ -51,20 +51,17 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
 .hub-value { fill: var(--fg); font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .hub-sub { fill: var(--muted); font-size: 10px; }
 
-/* The character. Colours come from the theme's accent; the face is always dark ink. */
-.m-tire { fill: color-mix(in srgb, var(--accent) 58%, #000); }
-.m-nub { fill: color-mix(in srgb, var(--accent) 80%, #000); }
-.m-face { fill: var(--accent); }
-.m-shine { fill: none; stroke: #fff; stroke-opacity: 0.4; stroke-width: 2.2; stroke-linecap: round; }
-.m-eye { fill: #16181d; }
-.m-glad, .m-mouth { fill: none; stroke: #16181d; stroke-linecap: round; }
-.m-glad { stroke-width: 2.4; opacity: 0; }
-.m-mouth { stroke-width: 2; }
-.mascot.happy .m-eye { opacity: 0; }
-.mascot.happy .m-glad { opacity: 1; }
-.m-bob { animation: m-bob 3.6s ease-in-out infinite; }
-[data-motion="subtle"] .m-bob { animation: none; }
-@keyframes m-bob { 50% { transform: translateY(-1.6px); } }
+/* The character: a pixel sprite. Its colours come from the theme's accent; the face is always dark ink. */
+.px-1 { fill: var(--accent); }
+.px-3 { fill: color-mix(in srgb, var(--accent) 58%, #fff); }
+.px-4 { fill: color-mix(in srgb, var(--accent) 72%, #000); }
+.px-eye { fill: #16181d; }
+/* Idle: it taps its feet, two frames, no easing, like a sprite. Subtle and Off keep it standing still. */
+.p-feet-a { visibility: visible; animation: p-feet-a 0.9s steps(1, end) infinite; }
+.p-feet-b { visibility: hidden; animation: p-feet-b 0.9s steps(1, end) infinite; }
+[data-motion="subtle"] .p-feet-a, [data-motion="subtle"] .p-feet-b { animation: none; }
+@keyframes p-feet-a { 50% { visibility: hidden; } }
+@keyframes p-feet-b { 50% { visibility: visible; } }
 @keyframes orbit { to { transform: rotate(360deg); } }
 
 /* ---------- panel shell ---------- */

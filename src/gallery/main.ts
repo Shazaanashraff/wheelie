@@ -3,6 +3,7 @@
  * It is built from the app's real modules (the ring engine, icon set, spring
  * physics, panel motion and stylesheets), so what you see is what ships.
  */
+import { wheelieMark } from "../overlay/mark.ts";
 import "../styles/base.css";
 import "../styles/icons.css";
 import "../studio/studio.css";
@@ -193,7 +194,7 @@ function app(): HTMLElement {
     return b;
   }));
   const content = h("main", { class: "content" });
-  const root = h("div", { class: "gal-app" }, h("aside", { class: "sidebar" }, h("div", { class: "brand" }, ic("ring", 22), h("span", {}, "Wheelie")), nav), content);
+  const root = h("div", { class: "gal-app" }, h("aside", { class: "sidebar" }, h("div", { class: "brand" }, wheelieMark(2), h("span", {}, "Wheelie")), nav), content);
   function go(i: number) {
     buttons.forEach((b, k) => b.classList.toggle("on", k === i));
     indicator.style.height = `${buttons[i].offsetHeight}px`;
