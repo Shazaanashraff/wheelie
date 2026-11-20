@@ -21,6 +21,8 @@ export interface Preview {
   /** Play the launch animation again. */
   replay(): void;
   select(index: number): void;
+  /** The live ring (null once destroyed), for demos that choose or close it. */
+  view(): RingView | null;
   destroy(): void;
 }
 
@@ -72,6 +74,7 @@ export function ringPreview(opts: PreviewOptions): Preview {
       selected = i;
       view?.setSelected(i);
     },
+    view: () => view,
     destroy: () => view?.destroy(),
   };
 }

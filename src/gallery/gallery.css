@@ -1,0 +1,44 @@
+/* Motion gallery: layout only. All the motion comes from the app's own CSS and code. */
+/* The overlay's stylesheet fixes html/body to the window and the app's lays #app out as sidebar + content;
+   the gallery is an ordinary scrolling page. */
+html { height: auto; overflow-y: auto; }
+body.gallery { overflow: visible; height: auto; min-height: 100vh; }
+body.gallery #app { display: block; height: auto; }
+.gal { max-width: 1120px; margin: 0 auto; padding: 36px 24px 90px; display: flex; flex-direction: column; gap: 34px; }
+.gal-head h1 { margin: 0; font-size: 38px; letter-spacing: -0.03em; }
+.gal-head p { margin: 8px 0 0; color: var(--muted); font-size: 15px; max-width: 720px; line-height: 1.5; }
+.gal-bar { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; padding: 14px 16px; background: var(--bg2); border: 1px solid var(--line); border-radius: 16px; position: sticky; top: 10px; z-index: 5; backdrop-filter: blur(10px); }
+.gal-bar label { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.gal-bar .seg { min-width: 0; }
+.gal-sec > h2 { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.02em; }
+.gal-sec > p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+.gal-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+.gal-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.gal-side { display: flex; flex-direction: column; gap: 10px; min-width: 220px; flex: 1; }
+.gal-side .btn { text-align: left; }
+.gal-hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.gal-stage { position: relative; width: 480px; height: 480px; flex: none; }
+.gal-stage .preview { position: absolute; inset: 0; }
+.gal-panel { position: absolute; background: var(--bg); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+.gal-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.gal-icon { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 6px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); transition: transform var(--spring-snappy-ms, 300ms) var(--spring-snappy, ease-out), border-color 140ms; }
+.gal-icon:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); }
+.gal-icon span { font-size: 12px; color: var(--muted); }
+.gal-sub { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 10px; }
+.gal-sub h3 { margin: 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+.gal-list { display: flex; flex-direction: column; padding: 6px; gap: 2px; min-height: 250px; }
+.gal-li { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px; }
+.gal-li:hover { background: var(--bg2); }
+.gal-li i { width: 30px; height: 30px; border-radius: 9px; background: color-mix(in srgb, var(--accent) 24%, transparent); flex: none; }
+.gal-app { display: grid; grid-template-columns: 200px 1fr; height: 330px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg); }
+.gal-app .sidebar { padding: 14px 10px; gap: 10px; }
+.gal-app .content { padding: 18px; }
+.gal-app .gal-page { display: flex; flex-direction: column; gap: 12px; }
+.gal-app .gal-page .card { padding: 14px 16px; }
+.gal-ctrls { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.gal-ctrl { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.gal-ctrl b { font-size: 13px; }
+.gal-keys { display: grid; grid-template-columns: repeat(4, 64px); gap: 8px; }
+.gal-keys .ckey { height: 54px; }
+.gal-voice .voice-bar { border-radius: 12px; border: 1px solid var(--line); }
+.gal-swatches { display: flex; gap: 10px; }

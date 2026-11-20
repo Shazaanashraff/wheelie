@@ -41,7 +41,27 @@ The icons are Wheelie's own set, drawn as SVG, and they animate on hover (the st
 - **Hover:** the slice under the pointer leans toward it and grows, its neighbours are pulled a little (like the macOS Dock), the whole ring tilts slightly toward the pointer, and a soft highlight follows it.
 - **Choosing:** the picked slice pulses and dissolves into the panel, which grows out of that slice on a spring. Closing fades it away.
 
-Animated previews: [launch](docs/previews/motion-launch.gif), [hover](docs/previews/motion-hover.gif), [choosing a tool](docs/previews/motion-choose.gif).
+### Every motion, previewed
+
+Open the **motion gallery** (`npm run dev`, then <http://localhost:1420/gallery.html>) to hover and click every animation live: the wheel, all 29 icons, panels and row cascades, the app shell, switches and bars, the voice bar and the calculator keys, with a switch for theme and for Full / Subtle / Off. It is built from the app's own code.
+
+Or watch them as GIFs (captured frame by frame):
+
+| Motion | Preview |
+| --- | --- |
+| Wheel launch | [motion-launch.gif](docs/previews/motion-launch.gif) |
+| Hover: lean, Dock-style pull, tilt, highlight | [motion-hover.gif](docs/previews/motion-hover.gif) |
+| Choosing a tool: the panel grows out of the slice | [motion-choose.gif](docs/previews/motion-choose.gif) |
+| Cancelling (release in the hub) | [wheel-cancel.gif](docs/previews/motion/wheel-cancel.gif) |
+| Full vs Subtle vs Off | [motion-levels.gif](docs/previews/motion/motion-levels.gif) |
+| The app opening | [app-open.gif](docs/previews/motion/app-open.gif) |
+| Moving around the app | [app-navigation.gif](docs/previews/motion/app-navigation.gif) |
+| Tool icons | [icons-tools.gif](docs/previews/motion/icons-tools.gif) |
+| Launcher icons | [icons-launchers.gif](docs/previews/motion/icons-launchers.gif) |
+| Panel opening (row cascade) and closing | [panel-open-close.gif](docs/previews/motion/panel-open-close.gif) |
+| Switch, progress, card lift | [controls.gif](docs/previews/motion/controls.gif) |
+| Voice note bar | [voice-bar.gif](docs/previews/motion/voice-bar.gif) |
+| Calculator keys | [calculator-keys.gif](docs/previews/motion/calculator-keys.gif) |
 
 ### Voice notes
 

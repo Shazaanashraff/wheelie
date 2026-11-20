@@ -13,16 +13,20 @@ const dropDuplicateOrtWasm = (): Plugin => ({
   },
 });
 
+// `WHEELIE_GALLERY=1 vite build` builds only the self-contained motion gallery (gallery.html).
+const galleryOnly = process.env.WHEELIE_GALLERY === "1";
+
 // Tauri expects a fixed dev port and a plain static build output.
 export default defineConfig({
   clearScreen: false,
   plugins: [dropDuplicateOrtWasm()],
+  publicDir: galleryOnly ? false : "public",
   server: { port: 1420, strictPort: true },
   // Two pages: the quick-touch overlay (index.html) and the Wheelie app window (studio.html).
   build: {
     target: "es2022",
-    outDir: "dist",
+    outDir: galleryOnly ? "dist-gallery" : "dist",
     emptyOutDir: true,
-    rollupOptions: { input: { main: resolve(__dirname, "index.html"), studio: resolve(__dirname, "studio.html") } },
+    rollupOptions: { input: galleryOnly ? { gallery: resolve(__dirname, "gallery.html") } : { main: resolve(__dirname, "index.html"), studio: resolve(__dirname, "studio.html") } },
   },
 });

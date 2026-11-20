@@ -3,9 +3,10 @@ import "./iconMotion.css";
 import { inTauri, installDevTrigger, invoke, listen } from "./bridge.ts";
 import { h, icon } from "./dom.ts";
 import { ic, UI_ICONS } from "./icons.ts";
-import { placePanel, type Box, type Rect } from "./layout.ts";
+import { placePanel, type Box } from "./layout.ts";
 import { ringSlots, type Settings, type Slot } from "./model.ts";
-import { loop, motionLevel, setMotionLevel, springEasing } from "./motion.ts";
+import { loop, setMotionLevel } from "./motion.ts";
+import { panelIn, panelOut } from "./panelmotion.ts";
 import { hitTest, renderRing, type RingView, type Slice } from "./ring.ts";
 import { loadSettings } from "./settingsStore.ts";
 import { applyAppearance } from "./themes.ts";
@@ -91,19 +92,6 @@ function runPanelCleanup() {
   cleanup = undefined;
 }
 
-/** Fade the panel out with a small shrink. */
-function animateOut(node: HTMLElement): Promise<void> {
-  if (motionLevel() === "off") return Promise.resolve();
-  const a = node.animate(
-    [
-      { opacity: 1, transform: "scale(1)" },
-      { opacity: 0, transform: "scale(0.95)" },
-    ],
-    { duration: 150, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" },
-  );
-  return a.finished.then(() => undefined).catch(() => undefined);
-}
-
 async function hide() {
   if (mode === "idle") return;
   const was = mode;
@@ -112,7 +100,7 @@ async function hide() {
   pinned = false;
   sticky = false;
   runPanelCleanup();
-  await (was === "panel" ? animateOut(panelEl) : view ? view.close() : Promise.resolve());
+  await (was === "panel" ? panelOut(panelEl) : view ? view.close() : Promise.resolve());
   if (mine !== epoch) return; // something opened while we were animating out
   view?.destroy();
   view = null;
@@ -188,30 +176,6 @@ function releaseRing() {
 
 // ----- panels ---------------------------------------------------------------
 
-/** Where the panel grows from: the chosen slice, or just the middle when opened without the ring. */
-function animateIn(rect: Rect, from?: { x: number; y: number }) {
-  const level = motionLevel();
-  if (level === "off") return;
-  const spring = springEasing({ stiffness: 480, damping: 29 }); // lively, settles in ~300ms
-  const keyframes: Keyframe[] =
-    from && level === "full"
-      ? [
-          { opacity: 0, transform: "scale(0.2)", borderRadius: "46px" },
-          { opacity: 1, transform: "scale(1)", borderRadius: "14px" },
-        ]
-      : [
-          { opacity: 0, transform: "translateY(12px) scale(0.965)" },
-          { opacity: 1, transform: "none" },
-        ];
-  if (from && level === "full") panelEl.style.transformOrigin = `${(from.x - rect.x).toFixed(1)}px ${(from.y - rect.y).toFixed(1)}px`;
-  else panelEl.style.transformOrigin = "50% 50%";
-  panelEl.animate(keyframes, { duration: spring.duration, easing: spring.easing, fill: "backwards" });
-  // The contents arrive a beat later, so the shape is seen to grow first.
-  for (const child of Array.from(panelEl.children)) {
-    child.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: from && level === "full" ? 110 : 40, easing: "ease-out", fill: "backwards" });
-  }
-}
-
 function openTool(id: string, from?: { x: number; y: number }) {
   const tool = byId.get(id);
   if (!tool) return;
@@ -242,7 +206,7 @@ function openTool(id: string, from?: { x: number; y: number }) {
   const rect = placePanel(center, { w: tool.size[0], h: tool.size[1] }, screenBox, { w: window.innerWidth, h: window.innerHeight });
   Object.assign(panelEl.style, { left: `${rect.x}px`, top: `${rect.y}px`, width: `${rect.w}px`, height: `${rect.h}px` });
   cleanup = tool.mount(body, ctx);
-  animateIn(rect, from);
+  panelIn(panelEl, rect, from);
   void invoke("focus_window");
 }
 
