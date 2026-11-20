@@ -50,6 +50,26 @@ Requires Windows 10 or 11 (64-bit).
 
 Both triggers can be changed in the app under **General**.
 
+### The centre of the wheel
+
+The middle of the ring is alive. When nothing is hovered, **Wheelie**, a small wheel-creature, lives there: it wakes up and looks around when the ring opens, follows your pointer with its eyes, blinks, hops, and smiles when you hover it. Move onto a slice and the character gives way to what that tool is up to, with a **progress arc** where there is progress to show.
+
+<p align="center"><img src="docs/images/mascot.png" alt="Wheelie the character, smiling, then the hub showing a running timer and to-do progress" width="760"></p>
+
+| Tool | What the centre shows |
+| --- | --- |
+| Clock | Time left on the running timer or pomodoro, with its progress arc; or the stopwatch |
+| To-do | How many are left, with an arc of how many are done |
+| Calculator | Your last result |
+| Notes | How many notes you have, and the latest title |
+| Clipboard | What you copied last |
+| Units | Your last conversion |
+| Links · Apps · Snippets | How many you have saved |
+| Colours · Passwords · World clock | The current colour · password length · the time in another city |
+| A launcher | Where it goes, and that it opens when you let go |
+
+The character follows the theme's accent colour, and respects the motion setting: **Full** does everything, **Subtle** just blinks, **Off** is a still picture.
+
 ### Two parts: the wheel and the app
 
 - **The wheel** is the quick-touch overlay. It starts instantly and does one thing.
@@ -86,7 +106,7 @@ Eight themes, each with its own accent colour, which you can override with one o
 
 <p align="center"><img src="docs/images/themes.png" alt="Dark, Light, Midnight, Graphite, Sunset, Forest, Rose and Tinted" width="760"></p>
 
-- **Icons** are Wheelie's own, drawn as SVG, and they animate on hover (the stopwatch sweeps, the lock opens, the chain links part). They share one colour by default; choose *Accent* or *Colourful* if you prefer. Line or duotone, three weights.
+- **Icons** are Wheelie's own, drawn as SVG, and they animate on hover (the stopwatch sweeps, the lock opens, the chain links part). They share one colour by default; choose *Accent* or *Colourful* if you prefer, and that applies to the wheel and the tool panels. The app's own sidebar always stays monochrome. Line or duotone, three weights.
 - **Ring transparency**, and **motion**: Full, Subtle or Off. Wheelie also respects the Windows reduced-motion setting.
 
 ### Motion

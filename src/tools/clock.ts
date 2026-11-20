@@ -3,15 +3,15 @@ import { store } from "../core/store.ts";
 import type { Tool } from "./types.ts";
 
 type Tab = "stopwatch" | "timer" | "pomodoro";
-type Phase = "focus" | "break";
+export type Phase = "focus" | "break";
 
-interface Stopwatch {
+export interface Stopwatch {
   running: boolean;
   startedAt: number;
   acc: number;
   laps: number[];
 }
-interface Countdown {
+export interface Countdown {
   endAt: number | null;
   total: number; // seconds
   label: string;

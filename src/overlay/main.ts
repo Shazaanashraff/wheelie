@@ -11,7 +11,8 @@ import { hitTest, renderRing, type RingView, type Slice } from "./ring.ts";
 import { loadSettings } from "../core/settingsStore.ts";
 import { applyAppearance } from "../core/themes.ts";
 import { watchAlarms } from "../tools/clock.ts";
-import { LIBRARY } from "../tools/registry.ts";
+import { refreshExtras } from "../tools/glanceLive.ts";
+import { LIBRARY, sliceOf } from "../tools/registry.ts";
 import type { Tool, ToolCtx } from "../tools/types.ts";
 
 /**
@@ -60,7 +61,7 @@ const dpr = () => window.devicePixelRatio || 1;
 
 function currentSlices(): Slice[] {
   shown = ringSlots(settings.slots).filter((s) => s.kind === "launch" || byId.has(s.id));
-  return shown.map((s) => (s.kind === "tool" ? { id: s.id, name: byId.get(s.id)!.name, icon: s.id } : { id: s.id, name: s.name, icon: s.icon }));
+  return shown.map((s) => sliceOf(s)!); // every shown slot is a launcher or a tool that exists
 }
 
 function applySettings() {
@@ -128,6 +129,7 @@ function openRing(p: OpenPayload) {
   hover = -1;
   ringEl.hidden = false;
   view = renderRing(ringEl, slices, center.x, center.y);
+  void refreshExtras(); // notes and clipboard for the hub; arrives while the ring is up
 }
 
 function pointerAt(x: number, y: number) {

@@ -3,6 +3,7 @@ import type { Slot } from "../core/model.ts";
 import type { Slice } from "../overlay/ring.ts";
 import { registerToolIds } from "../core/settingsStore.ts";
 import { apps } from "./apps.ts";
+import { slotGlance } from "./glanceLive.ts";
 import { calc } from "./calc.ts";
 import { clipboard } from "./clipboard.ts";
 import { clock } from "./clock.ts";
@@ -24,7 +25,7 @@ export const toolById = (id: string): Tool | undefined => LIBRARY.find((t) => t.
 
 /** What the ring draws for a slot. Returns null for a tool that no longer exists. */
 export function sliceOf(slot: Slot): Slice | null {
-  if (slot.kind === "launch") return { id: slot.id, name: slot.name, icon: slot.icon };
+  if (slot.kind === "launch") return { id: slot.id, name: slot.name, icon: slot.icon, glance: () => slotGlance(slot, slot.name) };
   const t = toolById(slot.id);
-  return t ? { id: t.id, name: t.name, icon: t.id } : null;
+  return t ? { id: t.id, name: t.name, icon: t.id, glance: () => slotGlance(slot, t.name) } : null;
 }

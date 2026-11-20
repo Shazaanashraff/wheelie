@@ -27,6 +27,13 @@ Windows ─► low-level keyboard/mouse hook (hook_win.rs)
 - Near a screen edge, the ring is moved fully on-screen and the cursor is moved to its centre.
 - On release, the slice under the pointer is chosen: a **tool** opens its panel; a **launcher** opens its app, folder or link straight away.
 
+## The centre of the ring
+
+The hub shows one of two things, and swaps between them on a spring as you move across slices:
+
+- **The character** (`overlay/mascot.ts`): drawn in SVG around the origin and tinted with the accent. Its face is driven by springs: the pointer sets where it looks (`mascotmath.ts` maps pointer distance to a gaze, tested), and timers schedule blinks and hops. On launch it plays a short scripted wake-up and look-around, which any real pointer movement cancels. Motion level gates it: Full does everything, Subtle only blinks, Off is static.
+- **The tool's info** (`tools/glance.ts`): each slice carries a `glance()` returning a headline, a line under it and an optional 0 to 1 progress. `glance.ts` is a pure function of the stored data and the clock, so it is unit tested; `glanceLive.ts` supplies the real store and fetches what the store lacks (notes, clipboard) when the ring opens. Glances flagged `live` (a running timer) are refreshed four times a second while hovered.
+
 ## Source layout
 
 ```
@@ -50,12 +57,14 @@ src/
     dom.ts, ui.ts  Tiny DOM builder; segmented control, switch, list rows
   overlay/       The wheel
     main.ts        Ring/panel state machine, slot activation
-    ring.ts        Ring engine: springs, hover lean, Dock-style pull, tilt, launch/choose
+    ring.ts        Ring engine: springs, hover lean, Dock-style pull, tilt, launch/choose, the hub
+    mascot.ts      The Wheelie character in the hub
+    mascotmath.ts  Where it looks and when it blinks or hops (tested)
     ringmath.ts    Geometry: hit-testing, pointer influence (tested)
     layout.ts      Placing a panel on screen (tested)
     panelmotion.ts Panel open/close motion, shared with the gallery
   studio/        The app window: shell, live ring preview, one file per page
-  tools/         One file per tool; registry.ts is the library
+  tools/         One file per tool; registry.ts is the library; glance.ts is what the hub shows for each
   voice/         Recorder, Whisper worker, dictation controller
   styles/        base.css, icons.css
 ```

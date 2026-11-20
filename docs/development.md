@@ -46,7 +46,7 @@ docs/               Guides (this folder); previews/ holds screenshots and GIFs
 scripts/            Release helper (version.mjs) and build helpers
 src/
   core/             Shared code: settings model, themes, motion engine, icons, DOM helpers, bridge to Rust
-  overlay/          The wheel window: ring engine, geometry, panel placement and motion
+  overlay/          The wheel window: ring engine, the Wheelie character, geometry, panel placement and motion
   studio/           The Wheelie app window: shell, live preview, one file per page
   tools/            The tools. One file per tool; registry.ts is the library
   voice/            Voice notes: recorder, Whisper worker, dictation controller
@@ -67,7 +67,7 @@ Tests live next to the code they test, as `*.test.ts`, and run on Node's built-i
 npm test
 ```
 
-covers the calculator parser and state, unit and time-zone data, colour maths, password generation, snippet formatting, the settings model and its migration, theme and contrast logic, spring physics, ring geometry, panel placement, and the release script.
+covers the calculator parser and state, what the ring's centre shows for each tool, the character's gaze and timing, unit and time-zone data, colour maths, password generation, snippet formatting, the settings model and its migration, theme and contrast logic, spring physics, ring geometry, panel placement, and the release script.
 
 Rust tests cover the trigger state machine (`trigger.rs`) and the notes file layer (`notes_core.rs`). They run on Windows in CI.
 

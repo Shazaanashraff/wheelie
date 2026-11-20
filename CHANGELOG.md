@@ -19,8 +19,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - An interactive motion gallery (`gallery.html`) for previewing every animation.
 - Start with Windows, with the app living quietly in the tray.
 
+- **Wheelie, the character.** A small wheel-creature lives in the middle of the ring while nothing is hovered. It wakes up and looks around on launch, follows the pointer, blinks, hops and smiles, in the theme's accent colour.
+- **Tool info in the centre.** Hover a slice and the hub shows what that tool is up to (the timer's time left, to-dos remaining, your last result, how many notes or links you have...), with a progress arc for timers, pomodoro and to-dos.
+- Logo concepts in `docs/design/logo-concepts`.
+
 ### Changed
 
+- The app's sidebar and brand icons are always monochrome. The Icon colour setting now only affects the wheel and tool panels.
 - Themes now carry their own accent colour. Sunset is orange, Forest is green and Rose is pink until you pick an accent yourself; a "theme default" swatch resets it.
 - Text on an accent colour now picks white or dark automatically, so light accents (such as Graphite's) stay readable.
 - Every tool and launcher icon uses one colour, the theme's foreground, in the wheel, panel headers, the sidebar and cards. *Accent* and *Colourful* are still available in Appearance.

@@ -42,11 +42,30 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
 .hub { fill: var(--seg); stroke: var(--seg-line); }
 .hub-orbit { fill: none; stroke: var(--accent); stroke-opacity: 0.55; stroke-width: 1.6; stroke-dasharray: 2 9; stroke-linecap: round; transform-box: fill-box; transform-origin: center; animation: orbit 22s linear infinite; }
 [data-motion="subtle"] .hub-orbit { animation: none; }
-.hub-label { fill: var(--muted); font-size: 12px; font-weight: 600; pointer-events: none; transform-box: fill-box; transform-origin: center; transition: fill 110ms; }
-.hub-label.active { fill: var(--fg); }
-.hub-label.swap { animation: label-swap 200ms var(--ease-out); }
+/* The hub's contents: the Wheelie character while idle, the hovered tool's info otherwise. */
+.hub-info, .mascot { pointer-events: none; }
+.hub-info { opacity: 0; }
+.hub-track { fill: none; stroke: var(--fg); stroke-opacity: 0.12; stroke-width: 3; opacity: 0; }
+.hub-arc { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; opacity: 0; }
+.hub-name { fill: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em; }
+.hub-value { fill: var(--fg); font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.hub-sub { fill: var(--muted); font-size: 10px; }
+
+/* The character. Colours come from the theme's accent; the face is always dark ink. */
+.m-tire { fill: color-mix(in srgb, var(--accent) 58%, #000); }
+.m-nub { fill: color-mix(in srgb, var(--accent) 80%, #000); }
+.m-face { fill: var(--accent); }
+.m-shine { fill: none; stroke: #fff; stroke-opacity: 0.4; stroke-width: 2.2; stroke-linecap: round; }
+.m-eye { fill: #16181d; }
+.m-glad, .m-mouth { fill: none; stroke: #16181d; stroke-linecap: round; }
+.m-glad { stroke-width: 2.4; opacity: 0; }
+.m-mouth { stroke-width: 2; }
+.mascot.happy .m-eye { opacity: 0; }
+.mascot.happy .m-glad { opacity: 1; }
+.m-bob { animation: m-bob 3.6s ease-in-out infinite; }
+[data-motion="subtle"] .m-bob { animation: none; }
+@keyframes m-bob { 50% { transform: translateY(-1.6px); } }
 @keyframes orbit { to { transform: rotate(360deg); } }
-@keyframes label-swap { from { opacity: 0; transform: translateY(5px) scale(0.96); } }
 
 /* ---------- panel shell ---------- */
 /* color-scheme lives here, not on :root: on :root it paints an opaque canvas behind the transparent ring. */

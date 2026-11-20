@@ -97,9 +97,10 @@ Tools are self-contained, so this is the most approachable kind of contribution.
    Use `store` from `src/core/store.ts` to persist anything, and put pure logic in its own file with tests.
 2. **Draw an icon** in `TOOL_ICONS` in `src/core/icons.ts`: a 24x24 line icon using `currentColor`. Mark shapes that should fill in duotone mode with `class="f"`. Add an entry to `TOOL_COLORS` for the optional colourful mode.
 3. **Register it** in `src/tools/registry.ts` by importing it and adding it to `LIBRARY`.
-4. **Add icon motion** (optional) in `src/styles/icons.css`, in the "when an icon plays" block.
-5. **Test it** in the browser with `npm run dev`, in more than one theme, and check it in the [motion gallery](http://localhost:1420/gallery.html).
-6. Add it to the tool list in the README and to the changelog.
+4. **Say what the centre of the wheel shows** for your tool: add a `case` to `toolGlance()` in `src/tools/glance.ts` returning a headline, a line under it and, if it has progress, a 0 to 1 value (with a test in `glance.test.ts`). Keep it short: about 11 and 16 characters fit.
+5. **Add icon motion** (optional) in `src/styles/icons.css`, in the "when an icon plays" block.
+6. **Test it** in the browser with `npm run dev`, in more than one theme, and check it in the [motion gallery](http://localhost:1420/gallery.html).
+7. Add it to the tool list in the README and to the changelog.
 
 ## Reviewing and releasing
 

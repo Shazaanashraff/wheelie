@@ -3,6 +3,7 @@
  * hovering feels identical and what you customise is what you get.
  */
 import { h } from "../core/dom.ts";
+import { refreshExtras } from "../tools/glanceLive.ts";
 import { hitTest, renderRing, type RingView, type Slice } from "../overlay/ring.ts";
 
 const STAGE = 480; // the ring is drawn on a fixed 480px stage, then scaled to fit
@@ -38,6 +39,7 @@ export function ringPreview(opts: PreviewOptions): Preview {
   let n = 0;
 
   const draw = (animate: boolean) => {
+    void refreshExtras();
     view?.destroy();
     const slices = opts.getSlices();
     n = slices.length;

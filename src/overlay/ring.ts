@@ -1,5 +1,7 @@
 import { ic } from "../core/icons.ts";
 import { SPRINGS, Spring, loop, motionLevel, springEasing } from "../core/motion.ts";
+import type { Glance } from "../tools/glance.ts";
+import { createMascot } from "./mascot.ts";
 import { R_IN, R_OUT, hitTest, influence, polar, sliceAngle, sliceCenter } from "./ringmath.ts";
 
 export { R_IN, R_OUT, hitTest };
@@ -13,6 +15,8 @@ export interface Slice {
   name: string;
   /** Icon id from the icon set. */
   icon: string;
+  /** What the hub shows while this slice is hovered: a headline, a line under it, and optional progress. */
+  glance?: () => Glance;
 }
 
 const f = (n: number) => n.toFixed(2);
@@ -62,6 +66,8 @@ export interface RingOptions {
   animateIn?: boolean;
 }
 
+const PROGRESS_R = 51; // radius of the progress arc, inside the hub
+
 /** Build the ring into `root`, centred at (cx, cy) in CSS px. */
 export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: number, opts: RingOptions = {}): RingView {
   const ns = "http://www.w3.org/2000/svg";
@@ -106,9 +112,18 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
 
   const orbit = el("circle", { r: String(R_IN - 3), class: "hub-orbit" });
   const hub = el("circle", { r: String(R_IN - 6), class: "hub" });
-  const label = el("text", { class: "hub-label", "text-anchor": "middle", y: "5" });
-  label.textContent = "Wheelie";
-  g.append(orbit, hub, label);
+  const mascot = createMascot();
+
+  // What the hub shows while a slice is hovered: the tool's name, a headline, a line under it,
+  // and a progress arc when the tool has progress.
+  const info = el("g", { class: "hub-info" });
+  const track = el("circle", { r: String(PROGRESS_R), class: "hub-track" });
+  const arc = el("circle", { r: String(PROGRESS_R), class: "hub-arc", pathLength: "1", "stroke-dasharray": "1 1", transform: "rotate(-90)" });
+  const nameT = el("text", { class: "hub-name", "text-anchor": "middle", y: "-13" });
+  const valueT = el("text", { class: "hub-value", "text-anchor": "middle", y: "9" });
+  const subT = el("text", { class: "hub-sub", "text-anchor": "middle", y: "25" });
+  info.append(track, arc, nameT, valueT, subT);
+  g.append(orbit, hub, mascot.el, info);
   root.append(svg);
 
   // Slices bloom out of the ring's centre: give each wrapper that point as its origin.
@@ -124,7 +139,10 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
   const bump = slices.map(() => new Spring(0, SPRINGS.bouncy)); // choosing: pulse
   const tiltX = new Spring(0, SPRINGS.soft);
   const tiltY = new Spring(0, SPRINGS.soft);
-  const all = [...lift, ...gone, ...bump, tiltX, tiltY];
+  const infoS = new Spring(0, SPRINGS.snappy); // hub: info in, character out
+  const arcOn = new Spring(0, SPRINGS.smooth); // progress arc visible
+  const prog = new Spring(0, SPRINGS.smooth); // progress arc length
+  const all = [...lift, ...gone, ...bump, tiltX, tiltY, infoS, arcOn, prog];
 
   let hover = -1;
   let ptr = { dx: 0, dy: 0 };
@@ -140,6 +158,13 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
       p.wrap.style.opacity = String(Math.max(0, 1 - gn));
       p.icon.style.transform = `scale(${(1 + 0.16 * l).toFixed(4)})`;
     });
+    const iv = Math.max(0, Math.min(1, infoS.value));
+    info.style.opacity = f(Math.max(0, (iv - 0.35) / 0.65)); // arrives just after the character has gone
+    info.style.transform = `translateY(${f((1 - iv) * 5)}px)`;
+    const ao = Math.max(0, Math.min(1, arcOn.value));
+    arc.style.opacity = f(ao);
+    track.style.opacity = f(ao);
+    arc.setAttribute("stroke-dashoffset", f(1 - Math.max(0, Math.min(1, prog.value))));
     const tilt = Math.abs(tiltX.value) > 0.01 || Math.abs(tiltY.value) > 0.01;
     svg.style.transform = tilt ? `perspective(900px) rotateX(${tiltX.value.toFixed(3)}deg) rotateY(${tiltY.value.toFixed(3)}deg)` : "";
   };
@@ -175,11 +200,7 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
       if (i === hover) return;
       hover = i;
       parts.forEach((p, k) => p.slice.classList.toggle("hover", k === i));
-      label.textContent = i >= 0 ? slices[i].name : "Wheelie";
-      label.classList.toggle("active", i >= 0);
-      label.classList.remove("swap");
-      void (label as unknown as SVGElement).getBoundingClientRect(); // restart the label animation
-      label.classList.add("swap");
+      showInfo(i);
       retarget();
     },
 
@@ -189,6 +210,8 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
 
     setPointer(dx, dy) {
       ptr = { dx, dy };
+      mascot.look(dx, dy);
+      mascot.setMood(hover < 0 && Math.hypot(dx, dy) < R_IN * 0.9 ? "happy" : "calm");
       retarget();
     },
 
@@ -237,11 +260,49 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
 
     destroy() {
       dead = true;
+      clearInterval(liveTimer);
+      mascot.destroy();
       loop.remove(tick);
       svg.getAnimations({ subtree: true }).forEach((a) => a.cancel());
       root.replaceChildren();
     },
   };
+
+  // ---- the hub: the character while nothing is hovered, the tool's info while something is ----
+  let liveTimer: number | undefined;
+  let shownGlance = "";
+  const paint = (gl: Glance) => {
+    const key = `${gl.name}|${gl.value}|${gl.sub}`;
+    if (key !== shownGlance) {
+      shownGlance = key;
+      nameT.textContent = gl.name;
+      valueT.textContent = gl.value;
+      subT.textContent = gl.sub;
+    }
+    arcOn.set(gl.progress === null ? 0 : 1);
+    if (gl.progress !== null) prog.set(gl.progress);
+  };
+  function showInfo(i: number) {
+    clearInterval(liveTimer);
+    const gl = i >= 0 ? (slices[i].glance?.() ?? { name: slices[i].name, value: slices[i].name, sub: "", progress: null, live: false }) : null;
+    if (gl) {
+      paint(gl);
+      // Jump the arc to where it is now, rather than sweeping up from the last tool's value.
+      if (gl.progress !== null && arcOn.value < 0.05) prog.snap(gl.progress);
+      if (gl.live)
+        liveTimer = window.setInterval(() => {
+          const next = slices[i].glance?.();
+          if (next) {
+            paint(next);
+            loop.add(tick);
+          }
+        }, 250);
+    } else arcOn.set(0);
+    infoS.set(gl ? 1 : 0);
+    mascot.setShown(!gl);
+    mascot.setMood("calm");
+    loop.add(tick);
+  }
 
   // ---- the launch: bloom out of the centre, clockwise, with spring overshoot ---------
   function playOpen() {
@@ -277,17 +338,16 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
         );
       }
     });
-    for (const node of [hub, label]) {
-      (node as SVGElement).style.transformBox = "fill-box";
-      (node as SVGElement).style.transformOrigin = "center";
-      node.animate(
-        [
-          { opacity: 0, transform: "scale(0.3)" },
-          { opacity: 1, transform: "scale(1)" },
-        ],
-        { duration: bounce.duration, easing: bounce.easing, fill: "backwards" },
-      );
-    }
+    (hub as SVGElement).style.transformBox = "fill-box";
+    (hub as SVGElement).style.transformOrigin = "center";
+    hub.animate(
+      [
+        { opacity: 0, transform: "scale(0.3)" },
+        { opacity: 1, transform: "scale(1)" },
+      ],
+      { duration: bounce.duration, easing: bounce.easing, fill: "backwards" },
+    );
+    mascot.enter();
   }
 
   apply();
