@@ -29,40 +29,33 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 /* ---------- ring ---------- */
+/* Motion for the ring (launch, hover, choosing) is spring-driven in ring.ts. */
 #ring { position: fixed; inset: 0; }
-.ring-svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45)); }
-.slice { transition: transform 150ms var(--ease-out); }
-.slice > path { fill: var(--seg); stroke: var(--seg-line); stroke-width: 1; transition: fill 90ms; }
-.slice.hover { transform: translate(var(--dx, 0), var(--dy, 0)); }
+.ring-svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45)); will-change: transform; }
+.slice > path { fill: var(--seg); stroke: var(--seg-line); stroke-width: 1; transition: fill 110ms; }
+.slice { transform-box: fill-box; transform-origin: center; }
 .slice.hover > path { fill: var(--accent); }
-.slice-icon { color: var(--fg); pointer-events: none; transition: transform 150ms var(--ease-out); transform-box: fill-box; transform-origin: center; }
-.slice.hover .slice-icon { transform: scale(1.14); }
-.slice-num { fill: var(--muted); font-size: 11px; pointer-events: none; transition: fill 90ms; }
+.slice-icon { color: var(--fg); pointer-events: none; transform-box: fill-box; transform-origin: center; }
+.slice-num { fill: var(--muted); font-size: 11px; pointer-events: none; transition: fill 110ms; }
 .slice.hover .slice-num { fill: rgba(255, 255, 255, 0.8); }
 .hub { fill: var(--seg); stroke: var(--seg-line); }
 .hub-orbit { fill: none; stroke: var(--accent); stroke-opacity: 0.55; stroke-width: 1.6; stroke-dasharray: 2 9; stroke-linecap: round; transform-box: fill-box; transform-origin: center; animation: orbit 22s linear infinite; }
 [data-motion="subtle"] .hub-orbit { animation: none; }
-.hub-label { fill: var(--muted); font-size: 12px; font-weight: 600; pointer-events: none; transform-box: fill-box; transform-origin: center; transition: fill 90ms; }
+.hub-label { fill: var(--muted); font-size: 12px; font-weight: 600; pointer-events: none; transform-box: fill-box; transform-origin: center; transition: fill 110ms; }
 .hub-label.active { fill: var(--fg); }
-.hub-label.swap { animation: label-swap 160ms var(--ease-out); }
-#ring.pop .slice { animation: slice-in 320ms cubic-bezier(0.2, 0.9, 0.3, 1.25) backwards; animation-delay: calc(var(--i) * var(--stagger)); }
-#ring.pop .hub, #ring.pop .hub-label { animation: hub-in 280ms var(--ease-out) backwards; transform-box: fill-box; transform-origin: center; }
-@keyframes slice-in { from { opacity: 0; transform: scale(0.42) rotate(-18deg); } }
-@keyframes hub-in { from { opacity: 0; transform: scale(0.3); } }
+.hub-label.swap { animation: label-swap 200ms var(--ease-out); }
 @keyframes orbit { to { transform: rotate(360deg); } }
-@keyframes label-swap { from { opacity: 0; transform: translateY(5px); } }
+@keyframes label-swap { from { opacity: 0; transform: translateY(5px) scale(0.96); } }
 
 /* ---------- panel shell ---------- */
 /* color-scheme lives here, not on :root: on :root it paints an opaque canvas behind the transparent ring. */
 #panel { color-scheme: dark; }
 :root[data-scheme="light"] #panel { color-scheme: light; }
 #panel {
-  position: fixed; left: 12px; top: 12px;
+  position: absolute; /* left/top/width/height are set from main.ts */
   display: flex; flex-direction: column;
   background: var(--bg); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
 }
-#panel.rise { animation: panel-in 240ms var(--ease-out); }
-@keyframes panel-in { from { opacity: 0; transform: translateY(12px) scale(0.965); } }
 .panel-head { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 8px 0 14px; border-bottom: 1px solid var(--line); flex: none; }
 .panel-icon { color: var(--accent); display: flex; pointer-events: none; }
 .panel-title { flex: 1; font-weight: 600; pointer-events: none; }

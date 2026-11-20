@@ -13,28 +13,42 @@ Inspired by [Helix](https://tryhelix.app/) (Mac). This is an independent rewrite
 | Release in the centre hub | Cancels |
 | Quick tap instead of a hold | Ring stays open: click a slice, or press **1-8** |
 | **Esc**, or click away from a panel | Closes it |
-| Right-click the tray icon | Settings / Quit |
+| Click the tray icon (or right-click for the menu) | Opens the Wheelie app: Open Wheelie / Quit |
 
-The trigger keys, theme, accent colour and which tools are in the ring (and their order) are all in **Settings**.
+### Two parts: the wheel, and the app
+
+- **The wheel** is the quick-touch overlay: hold, point, let go. It stays out of the way and starts instantly.
+- **The Wheelie app** is a normal window where everything is customised: themes and colours, which tool sits in each slot (with a live ring you can click), the tool library, voice, and startup. It starts quietly in the tray when Windows starts, so the wheel is always ready. Click the tray icon to open it. Closing its window just hides it; **Quit** is in the tray menu and in the app's General page.
+- Changes made in the app reach the wheel immediately, no restart.
+
+The first time Wheelie runs it opens the app and sets itself to start with Windows. You can switch that off in *Home* or *General*.
 
 ### The ring, slots and the tool library
 
-The ring has **8 slots**. Each slot holds either a **tool from the library** or a **launcher** that runs an app, folder or link the moment you release over it (no panel). Open **Settings → Ring** to change what is in each slot, reorder, or empty a slot (at least 2 must stay). Picking a tool that is already in another slot swaps the two.
+The ring has **8 slots**. Each slot holds either a **tool from the library** or a **launcher** that runs an app, folder or link the moment you release over it (no panel). Open the app's **Ring** page to change what is in each slot, reorder, or empty a slot (at least 2 must stay). Picking a tool that is already in another slot swaps the two.
 
 Library: Calculator · Clock · Notes · To-do · Clipboard · Units · Links · Apps · **Colours** (eyedropper + saved palette) · **Snippets** (saved text, `{date}` `{time}` `{weekday}` filled in, click to paste) · **Passwords** (strong random passwords) · **World clock**
 
 ### Look and motion
 
-**Settings → Look**: 8 themes (Dark, Light, Midnight, Graphite, Sunset, Forest, Rose, Tinted), 10 accent colours plus a custom picker, icon colour (match theme / accent / colourful), icon style (line / duotone), icon weight, ring transparency, and motion (Full / Subtle / Off; also respects the Windows reduced-motion setting).
+**Appearance** (in the app): 8 themes (Dark, Light, Midnight, Graphite, Sunset, Forest, Rose, Tinted), 10 accent colours plus a custom picker, icon colour (match theme / accent / colourful), icon style (line / duotone), icon weight, ring transparency, and motion (Full / Subtle / Off; also respects the Windows reduced-motion setting).
 
-The icons are Wheelie's own set, drawn as SVG, and they animate on hover (the stopwatch hand sweeps, the lock opens, the chain links part, calculator keys ripple...). The ring blooms open and slices lean toward your pointer.
+The icons are Wheelie's own set, drawn as SVG, and they animate on hover (the stopwatch hand sweeps, the lock opens, the chain links part, calculator keys ripple...).
+
+**Motion** is built on spring physics rather than fixed easing curves, so it behaves like iOS: things move with momentum, overshoot a touch, settle naturally, and can be redirected mid-flight without a jolt.
+
+- **Launch:** the ring blooms out of its centre, slice by slice clockwise, with a soft blur-in.
+- **Hover:** the slice under the pointer leans toward it and grows, its neighbours are pulled a little (like the macOS Dock), the whole ring tilts slightly toward the pointer, and a soft highlight follows it.
+- **Choosing:** the picked slice pulses and dissolves into the panel, which grows out of that slice on a spring. Closing fades it away.
+
+Animated previews: [launch](docs/previews/motion-launch.gif), [hover](docs/previews/motion-hover.gif), [choosing a tool](docs/previews/motion-choose.gif).
 
 ### Voice notes
 
 In **Notes**, press the mic (or the mic next to *New* for a brand-new voice note), speak, then press **Done**. Your words are written into the note and saved as text like anything you type.
 
 - **Private:** speech is turned into text **on your PC** by a small Whisper model. Audio is never uploaded and never saved, only the text.
-- **First use:** the model (about 45 MB) downloads once from Hugging Face, then works offline. You can pre-download it, or pick a more accurate or multilingual model, in **Settings → Voice**.
+- **First use:** the model (about 45 MB) downloads once from Hugging Face, then works offline. You can pre-download it, or pick a more accurate or multilingual model, in **the app's Voice page**.
 - Windows may ask to allow microphone access the first time. If it was blocked, enable it in *Settings → Privacy & security → Microphone*.
 
 ### Tools (v1)
@@ -62,14 +76,15 @@ Prerequisites on Windows: [Node 22+](https://nodejs.org), [Rust](https://rustup.
 
 ```sh
 npm install
-npm run tauri dev      # the real app, with the global hooks
+npm run tauri dev      # the real app, with the global hooks (the first run also registers start-with-Windows; turn it off in the app)
 npm run tauri build    # produces the installer in src-tauri/target/release/bundle/nsis
 ```
 
 The UI can also be developed in any browser, on any OS, without Rust:
 
 ```sh
-npm run dev            # then hold the middle mouse button, or Space, to open the ring
+npm run dev            # the wheel: hold the middle mouse button, or Space, to open the ring
+                       # the app: http://localhost:1420/studio.html
 npm test               # calculator parser + unit conversion tests
 ```
 
@@ -85,10 +100,14 @@ src-tauri/src/
   clip.rs       Clipboard history thread (in memory only)
   notes_core.rs Notes as .txt files: list/read/write/delete (unit tested, path-traversal safe)
   notes.rs      Tauri commands wrapping notes_core
-  main.rs       Window placement, tray, commands exposed to the UI
+  main.rs       Overlay window placement, the app window, tray, launch at login, commands
 src/
-  ring.ts       Ring rendering, hit-testing, bloom/lean motion
-  main.ts       Ring/panel state machine, slot activation
+  main.ts       The overlay: ring/panel state machine, slot activation
+  ring.ts       Ring engine: springs, hover lean, Dock-style pull, tilt, launch/choose animations
+  ringmath.ts   Ring geometry (hit-testing, pointer influence), unit tested
+  layout.ts     Placing a panel on screen, unit tested
+  motion.ts     Spring physics: live springs, and springs baked into CSS easings
+  studio/       The Wheelie app window: shell, live ring preview, one file per page
   model.ts      Settings + slot model (migration from older settings), unit tested
   themes.ts     Theme palettes and applying appearance
   icons.ts      Wheelie's animated icon set;  iconMotion.css: the motion

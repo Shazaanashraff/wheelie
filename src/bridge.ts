@@ -25,6 +25,14 @@ if (!inTauri) (window as any).__emitDev = emitDev;
 export const devCalls: { cmd: string; args?: Record<string, unknown> }[] = [];
 (window as any).__devCalls = devCalls;
 
+/** The browser viewport stands in for the monitor. */
+const viewportBounds = () => {
+  const k = window.devicePixelRatio || 1;
+  return { bx0: 0, by0: 0, bx1: innerWidth * k, by1: innerHeight * k };
+};
+
+let devAutostart = true;
+
 const SAMPLE_CLIPBOARD = [
   "https://example.com/some/long/link?with=params",
   "meeting notes: ship the radial menu on Friday",
@@ -48,6 +56,17 @@ async function devInvoke(cmd: string, args?: Record<string, unknown>): Promise<u
   switch (cmd) {
     case "clipboard_history":
       return SAMPLE_CLIPBOARD;
+    case "overlay_prepare": {
+      const k = window.devicePixelRatio || 1;
+      return { x: (innerWidth / 2) * k, y: (innerHeight / 2) * k, ...viewportBounds() };
+    }
+    case "autostart_get":
+      return devAutostart;
+    case "autostart_set":
+      devAutostart = Boolean(args?.on);
+      return undefined;
+    case "app_version":
+      return "0.4.0";
     case "notes_dir":
       return "C:\\Users\\you\\Documents\\Wheelie Notes";
     case "notes_list":
@@ -84,6 +103,8 @@ export function installDevTrigger(): void {
   if (inTauri) return;
   const dpr = window.devicePixelRatio || 1;
   let held = false;
+  // Same shape the Rust side sends: ring centre plus the screen bounds, in physical px.
+  const open = (x: number, y: number) => ({ x: x * dpr, y: y * dpr, ...viewportBounds() });
   const pt = (e: MouseEvent) => ({ x: e.clientX * dpr, y: e.clientY * dpr });
   let last = { x: 0, y: 0 };
   window.addEventListener("mousemove", (e) => {
@@ -94,7 +115,7 @@ export function installDevTrigger(): void {
     if (e.button !== 1 || held) return;
     e.preventDefault();
     held = true;
-    emitDev("ring:open", pt(e));
+    emitDev("ring:open", open(e.clientX, e.clientY));
   });
   window.addEventListener("mouseup", (e) => {
     if (e.button !== 1 || !held) return;
@@ -106,7 +127,7 @@ export function installDevTrigger(): void {
     if ((e.target as HTMLElement)?.matches?.("input,textarea,select,[contenteditable]")) return;
     e.preventDefault();
     held = true;
-    emitDev("ring:open", last.x || last.y ? last : { x: innerWidth / 2 * dpr, y: innerHeight / 2 * dpr });
+    emitDev("ring:open", last.x || last.y ? open(last.x / dpr, last.y / dpr) : open(innerWidth / 2, innerHeight / 2));
   });
   window.addEventListener("keyup", (e) => {
     if (e.code !== "Space" || !held) return;

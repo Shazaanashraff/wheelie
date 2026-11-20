@@ -36,6 +36,7 @@ export const TOOL_ICONS: Record<string, string> = {
     `<path class="br" d="M15 4c2 0 2.5 1 2.5 2.5v3c0 1.3.8 2.5 2 2.5-1.2 0-2 1.2-2 2.5v3c0 1.5-.5 2.5-2.5 2.5"/><path class="cur" d="M12 9v6"/>`,
   passwords: `<rect class="f" x="5" y="11" width="14" height="10" rx="2"/><path class="shackle" d="M8 11V8a4 4 0 0 1 8 0v3"/>` + dot(12, 16, 1.2, "keyhole", 0),
   worldclock: `<circle class="f" cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse class="mer" cx="12" cy="12" rx="4" ry="9"/>`,
+  ring: `<circle class="f" cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/><path class="rg" d="M12 3v5.8M12 15.2V21M3 12h5.8M15.2 12H21"/>`,
   settings: `<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle class="kn1" cx="16" cy="7" r="2"/><circle class="kn2" cx="8" cy="17" r="2"/>`,
   voice:
     `<rect class="f mic" x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/>` +
@@ -79,7 +80,7 @@ export const LAUNCH_ICON_IDS = Object.keys(LAUNCH_ICONS);
 /** Per-tool colours, used when "Colourful icons" is on. */
 export const TOOL_COLORS: Record<string, string> = {
   calc: "#ff9f43", clock: "#ff6b6b", notes: "#feca57", todo: "#1dd1a1", clipboard: "#54a0ff", units: "#a29bfe", links: "#48dbfb", apps: "#ff9ff3",
-  colors: "#fd79a8", snippets: "#00cec9", passwords: "#fdcb6e", worldclock: "#74b9ff", settings: "#b2bec3", voice: "#ff6b81",
+  ring: "#7c8cff", colors: "#fd79a8", snippets: "#00cec9", passwords: "#fdcb6e", worldclock: "#74b9ff", settings: "#b2bec3", voice: "#ff6b81",
   globe: "#74b9ff", folder: "#feca57", terminal: "#1dd1a1", mail: "#ff7675", star: "#fdcb6e", music: "#a29bfe", camera: "#fd79a8", code: "#00cec9",
   rocket: "#ff9f43", bolt: "#ffe66d", game: "#6c5ce7", heart: "#ff6b81", home: "#55efc4", chat: "#4ecdc4",
 };

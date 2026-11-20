@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 
 /**
@@ -17,5 +18,11 @@ export default defineConfig({
   clearScreen: false,
   plugins: [dropDuplicateOrtWasm()],
   server: { port: 1420, strictPort: true },
-  build: { target: "es2022", outDir: "dist", emptyOutDir: true },
+  // Two pages: the quick-touch overlay (index.html) and the Wheelie app window (studio.html).
+  build: {
+    target: "es2022",
+    outDir: "dist",
+    emptyOutDir: true,
+    rollupOptions: { input: { main: resolve(__dirname, "index.html"), studio: resolve(__dirname, "studio.html") } },
+  },
 });

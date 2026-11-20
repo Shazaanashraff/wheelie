@@ -53,6 +53,7 @@
   & .ic-voice .w1 { animation: wave 0.9s ease-out infinite; }
   & .ic-voice .w2 { animation: wave 0.9s ease-out infinite 0.25s; }
   & .ic-voice .mic { animation: beat 0.9s ease-in-out infinite; }
+  & .ic-ring .rg { animation: sweep 2.4s linear infinite; }
   & .ic-g .gw { animation: wobble 1s ease-in-out infinite; }
 }
 

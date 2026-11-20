@@ -1,5 +1,6 @@
 /** Theme presets and the code that applies appearance settings to the document. */
 import type { Settings } from "./model.ts";
+import { SPRINGS, springEasing } from "./motion.ts";
 
 export interface Palette {
   id: string;
@@ -65,8 +66,23 @@ export function buildVars(s: Settings): Record<string, string> {
   };
 }
 
+/** Spring easings and their settle times as CSS variables: `transition: transform var(--spring-ms) var(--spring)`. */
+export function springVars(): Record<string, string> {
+  const soft = springEasing(SPRINGS.soft);
+  const snappy = springEasing(SPRINGS.snappy);
+  const bouncy = springEasing(SPRINGS.bouncy);
+  return {
+    "--spring": soft.easing,
+    "--spring-ms": `${soft.duration}ms`,
+    "--spring-snappy": snappy.easing,
+    "--spring-snappy-ms": `${snappy.duration}ms`,
+    "--spring-bouncy": bouncy.easing,
+    "--spring-bouncy-ms": `${bouncy.duration}ms`,
+  };
+}
+
 export function applyAppearance(s: Settings, root: HTMLElement = document.documentElement): void {
-  for (const [k, v] of Object.entries(buildVars(s))) root.style.setProperty(k, v);
+  for (const [k, v] of Object.entries({ ...buildVars(s), ...springVars() })) root.style.setProperty(k, v);
   const d = root.dataset;
   d.scheme = paletteOf(s.theme).scheme;
   d.iconColor = s.iconColor;

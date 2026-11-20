@@ -2,10 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod clip;
-mod notes;
-mod notes_core;
 #[cfg(windows)]
 mod hook_win;
+mod notes;
+mod notes_core;
 #[allow(dead_code)]
 mod trigger;
 mod winutil;
@@ -18,17 +18,20 @@ use serde::Serialize;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, WebviewWindow};
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 
 use trigger::Event;
 
-/// Logical size of the transparent window while the ring is showing.
-const RING_SIZE: f64 = 560.0;
+/// Logical size of the transparent overlay window. It never changes size: it is big enough
+/// for the ring and for any tool panel, so panels can animate out of a slice inside it.
+const OVERLAY_W: f64 = 700.0;
+const OVERLAY_H: f64 = 700.0;
+/// How far the ring reaches from its centre (logical px, including the hover lean).
+const RING_REACH: f64 = 240.0;
 
 #[derive(Default)]
 struct Placement {
-    /// Screen position (physical px) the window is centred on.
-    anchor: (i32, i32),
-    /// Screen position of the window's top-left corner.
+    /// Screen position of the overlay window's top-left corner.
     origin: (i32, i32),
 }
 
@@ -44,6 +47,18 @@ struct Pt {
     y: i32,
 }
 
+/// Sent to the UI when the overlay opens. Everything is in physical pixels, relative to the
+/// window's top-left: where the ring centre is, and the bounds of the monitor it is on.
+#[derive(Serialize, Clone)]
+struct OpenInfo {
+    x: i32,
+    y: i32,
+    bx0: i32,
+    by0: i32,
+    bx1: i32,
+    by1: i32,
+}
+
 fn monitor_at(win: &WebviewWindow, x: i32, y: i32) -> Option<tauri::Monitor> {
     let mons = win.available_monitors().ok()?;
     mons.into_iter()
@@ -55,27 +70,35 @@ fn monitor_at(win: &WebviewWindow, x: i32, y: i32) -> Option<tauri::Monitor> {
         .or_else(|| win.primary_monitor().ok().flatten())
 }
 
-/// Resize the window to `logical` size and centre it on `anchor`, clamped to
-/// the monitor so the ring is never cut off at a screen edge.
-/// Returns the window's new top-left and its physical size.
-fn place(win: &WebviewWindow, anchor: (i32, i32), logical: (f64, f64)) -> Option<((i32, i32), (i32, i32))> {
-    let mon = monitor_at(win, anchor.0, anchor.1)?;
+/// Put the overlay window around `anchor`. If the ring would hang off the screen, the ring
+/// centre is nudged inwards (and, when `warp` is set, the cursor with it, so the pointer
+/// always starts in the hub). The window itself may extend past the screen edge: that part
+/// is transparent and invisible anyway.
+fn prepare(app: &AppHandle, anchor: (i32, i32), warp: bool) -> Option<OpenInfo> {
+    let win = app.get_webview_window("main")?;
+    let mon = monitor_at(&win, anchor.0, anchor.1)?;
     let scale = mon.scale_factor();
-    let w = (logical.0 * scale).round() as i32;
-    let h = (logical.1 * scale).round() as i32;
+    let (w, h) = ((OVERLAY_W * scale).round() as i32, (OVERLAY_H * scale).round() as i32);
+    let reach = (RING_REACH * scale).round() as i32;
     let (mp, ms) = (mon.position(), mon.size());
-    let x = (anchor.0 - w / 2).clamp(mp.x, (mp.x + ms.width as i32 - w).max(mp.x));
-    let y = (anchor.1 - h / 2).clamp(mp.y, (mp.y + ms.height as i32 - h).max(mp.y));
-    // Position first, then size, then position again: moving across monitors
-    // with different DPI can make Windows resize the window under us.
-    let _ = win.set_position(PhysicalPosition::new(x, y));
+    let (mx1, my1) = (mp.x + ms.width as i32, mp.y + ms.height as i32);
+    let cx = anchor.0.clamp(mp.x + reach, (mx1 - reach).max(mp.x + reach));
+    let cy = anchor.1.clamp(mp.y + reach, (my1 - reach).max(mp.y + reach));
+    if warp && (cx, cy) != anchor {
+        winutil::set_cursor_pos(cx, cy);
+    }
+    let origin = (cx - w / 2, cy - h / 2);
+    // Position first, then size, then position again: moving across monitors with a
+    // different DPI can make Windows resize the window under us.
+    let _ = win.set_position(PhysicalPosition::new(origin.0, origin.1));
     let _ = win.set_size(PhysicalSize::new(w as u32, h as u32));
-    let _ = win.set_position(PhysicalPosition::new(x, y));
-    Some(((x, y), (w, h)))
+    let _ = win.set_position(PhysicalPosition::new(origin.0, origin.1));
+    app.state::<AppState>().placement.lock().unwrap().origin = origin;
+    Some(OpenInfo { x: cx - origin.0, y: cy - origin.1, bx0: mp.x - origin.0, by0: mp.y - origin.1, bx1: mx1 - origin.0, by1: my1 - origin.1 })
 }
 
-fn focus(app: &AppHandle) {
-    if let Some(win) = app.get_webview_window("main") {
+fn focus_label(app: &AppHandle, label: &str) {
+    if let Some(win) = app.get_webview_window(label) {
         let _ = app.run_on_main_thread(move || {
             winutil::with_input_attached(|| {
                 let _ = win.set_focus();
@@ -88,25 +111,16 @@ fn focus(app: &AppHandle) {
 
 fn handle(app: &AppHandle, ev: Event) {
     let Some(win) = app.get_webview_window("main") else { return };
-    let state = app.state::<AppState>();
     match ev {
         Event::Down { x, y } => {
             winutil::cancel_menu_activation();
-            if let Some((origin, size)) = place(&win, (x, y), (RING_SIZE, RING_SIZE)) {
-                // Near a screen edge the window gets clamped onto the screen. Keep the
-                // whole ring visible by centring it in the window and moving the
-                // cursor to its centre, so the pointer always starts in the hub.
-                let centre = (origin.0 + size.0 / 2, origin.1 + size.1 / 2);
-                if centre != (x, y) {
-                    winutil::set_cursor_pos(centre.0, centre.1);
-                }
-                *state.placement.lock().unwrap() = Placement { anchor: centre, origin };
-                let _ = app.emit("ring:open", Pt { x: size.0 / 2, y: size.1 / 2 });
+            if let Some(info) = prepare(app, (x, y), true) {
+                let _ = app.emit("ring:open", info);
                 let _ = win.show();
             }
         }
         Event::Move { x, y } => {
-            let o = state.placement.lock().unwrap().origin;
+            let o = app.state::<AppState>().placement.lock().unwrap().origin;
             let _ = app.emit("ring:move", Pt { x: x - o.0, y: y - o.1 });
         }
         Event::Up => {
@@ -153,22 +167,29 @@ fn set_trigger_config(keyboard: String, mouse: String) {
     c.mouse = trigger::Mouse::parse(&mouse);
 }
 
-/// Switch from the ring to a tool panel of the given logical size.
+/// Show the overlay without the hold gesture (a timer went off, or a tool was opened from
+/// elsewhere): centred on the monitor the cursor is on. Returns where the centre is.
 #[tauri::command]
-fn enter_panel(app: AppHandle, w: f64, h: f64) {
-    let Some(win) = app.get_webview_window("main") else { return };
-    let state = app.state::<AppState>();
-    let anchor = state.placement.lock().unwrap().anchor;
-    if let Some((origin, _)) = place(&win, anchor, (w, h)) {
-        state.placement.lock().unwrap().origin = origin;
-    }
+fn overlay_prepare(app: AppHandle) -> Option<OpenInfo> {
+    let win = app.get_webview_window("main")?;
+    let anchor = win
+        .cursor_position()
+        .ok()
+        .and_then(|p| monitor_at(&win, p.x as i32, p.y as i32))
+        .or_else(|| win.primary_monitor().ok().flatten())
+        .map(|m| {
+            let (p, s) = (m.position(), m.size());
+            (p.x + s.width as i32 / 2, p.y + s.height as i32 / 2)
+        })?;
+    let info = prepare(&app, anchor, false)?;
     let _ = win.show();
-    focus(&app);
+    focus_label(&app, "main");
+    Some(info)
 }
 
 #[tauri::command]
 fn focus_window(app: AppHandle) {
-    focus(&app);
+    focus_label(&app, "main");
 }
 
 #[tauri::command]
@@ -176,6 +197,32 @@ fn hide_window(app: AppHandle) {
     if let Some(win) = app.get_webview_window("main") {
         let _ = win.hide();
     }
+}
+
+#[tauri::command]
+fn open_studio(app: AppHandle) {
+    show_studio(&app);
+}
+
+#[tauri::command]
+fn quit_app(app: AppHandle) {
+    app.exit(0);
+}
+
+#[tauri::command]
+fn app_version(app: AppHandle) -> String {
+    app.package_info().version.to_string()
+}
+
+#[tauri::command]
+fn autostart_get(app: AppHandle) -> Result<bool, String> {
+    app.autolaunch().is_enabled().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn autostart_set(app: AppHandle, on: bool) -> Result<(), String> {
+    let m = app.autolaunch();
+    if on { m.enable() } else { m.disable() }.map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -214,57 +261,69 @@ fn open_target(target: String) -> Result<(), String> {
     open::that_detached(t).map_err(|e| e.to_string())
 }
 
-// ----- tray / settings --------------------------------------------------------
+// ----- the Wheelie app window, tray, first run ---------------------------------
 
-fn open_settings(app: &AppHandle) {
-    let Some(win) = app.get_webview_window("main") else { return };
-    if let Ok(Some(m)) = win.primary_monitor() {
-        let (p, s) = (m.position(), m.size());
-        let anchor = (p.x + s.width as i32 / 2, p.y + s.height as i32 / 2);
-        app.state::<AppState>().placement.lock().unwrap().anchor = anchor;
+fn show_studio(app: &AppHandle) {
+    if let Some(win) = app.get_webview_window("studio") {
+        let _ = win.show();
+        let _ = win.unminimize();
+        focus_label(app, "studio");
     }
-    let _ = app.emit("app:open-tool", "settings");
 }
 
 fn build_tray(app: &tauri::App) -> tauri::Result<()> {
-    let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
+    let open = MenuItem::with_id(app, "open", "Open Wheelie", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Wheelie", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&settings, &quit])?;
+    let menu = Menu::with_items(app, &[&open, &quit])?;
     // Embedded explicitly: without an icon the tray entry is invisible and Wheelie can't be quit.
     let tray = TrayIconBuilder::new()
         .icon(tauri::include_image!("icons/32x32.png"))
         .tooltip("Wheelie")
         .menu(&menu)
         .on_menu_event(|app, ev| match ev.id.as_ref() {
-            "settings" => open_settings(app),
+            "open" => show_studio(app),
             "quit" => app.exit(0),
             _ => {}
         })
         .on_tray_icon_event(|tray, ev| {
-            if let TrayIconEvent::Click {
-                button: MouseButton::Left,
-                button_state: MouseButtonState::Up,
-                ..
-            } = ev
-            {
-                open_settings(tray.app_handle());
+            if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = ev {
+                show_studio(tray.app_handle());
             }
         });
     tray.build(app)?;
     Ok(())
 }
 
+/// True exactly once, the first time Wheelie ever runs on this PC.
+fn first_run(app: &tauri::App) -> bool {
+    let Ok(dir) = app.path().app_data_dir() else { return false };
+    let marker = dir.join("first-run-done");
+    if marker.exists() {
+        return false;
+    }
+    let _ = std::fs::create_dir_all(&dir);
+    let _ = std::fs::write(&marker, b"1");
+    true
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            open_settings(app);
+            // Starting Wheelie again (from the Start menu, say) brings the app forward.
+            show_studio(app);
         }))
+        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--autostart"])))
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![
             set_trigger_config,
-            enter_panel,
+            overlay_prepare,
             focus_window,
             hide_window,
+            open_studio,
+            quit_app,
+            app_version,
+            autostart_get,
+            autostart_set,
             clipboard_history,
             clipboard_clear,
             paste_text,
@@ -276,7 +335,8 @@ fn main() {
             notes::notes_delete,
         ])
         .on_window_event(|window, event| {
-            // Alt+F4 etc. must hide, not quit: Wheelie lives in the tray.
+            // Closing a window (Alt+F4, the X) hides it: Wheelie lives in the tray and keeps
+            // the ring available. Quit is in the tray menu and in the app's settings.
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
                 let _ = window.hide();
@@ -297,6 +357,17 @@ fn main() {
                 .expect("spawn pump thread");
 
             clip::spawn(app.handle().clone(), app.state::<AppState>().clip.clone());
+
+            // First ever launch: start with Windows from now on (changeable in the app), and
+            // greet the user with the app. After that, a start at login stays out of the way in
+            // the tray; starting Wheelie by hand opens the app.
+            let first = first_run(app);
+            if first {
+                let _ = app.autolaunch().enable();
+            }
+            if first || !std::env::args().any(|a| a == "--autostart") {
+                show_studio(app.handle());
+            }
             Ok(())
         })
         .run(tauri::generate_context!())
