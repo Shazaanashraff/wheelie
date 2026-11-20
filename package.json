@@ -2,13 +2,37 @@
   "name": "wheelie",
   "private": true,
   "version": "0.1.0",
+  "description": "A radial \"weapon wheel\" menu for Windows: hold a shortcut, point at a tool, let go.",
+  "keywords": [
+    "windows",
+    "tauri",
+    "radial-menu",
+    "productivity",
+    "launcher",
+    "desktop"
+  ],
+  "homepage": "https://github.com/Shazaanashraff/wheelie#readme",
+  "bugs": {
+    "url": "https://github.com/Shazaanashraff/wheelie/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shazaanashraff/wheelie.git"
+  },
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --test \"src/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"src/**/*.test.ts\" \"scripts/*.test.mjs\"",
     "tauri": "tauri",
+    "version:check": "node scripts/version.mjs check",
+    "version:bump": "node scripts/version.mjs bump",
     "predev": "node scripts/copy-ort.mjs",
     "prebuild": "node scripts/copy-ort.mjs"
   },

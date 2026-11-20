@@ -1,0 +1,75 @@
+name: Release
+
+# Push a tag like v0.2.0 and this builds the installer and publishes a GitHub Release.
+# See docs/releasing.md.
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.ref_name }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # Refuse to ship if the tag and the version in the source disagree, or the changelog has no entry.
+      - name: Check version
+        run: node scripts/version.mjs check "$env:TAG"
+      - name: Write release notes
+        run: node scripts/version.mjs notes "$env:TAG" release-notes.md
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - run: npx tauri build
+
+      - name: Collect assets and checksums
+        run: |
+          $v = $env:TAG.TrimStart('v')
+          New-Item -ItemType Directory -Path release | Out-Null
+          Copy-Item (Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1) "release/Wheelie_${v}_x64-setup.exe"
+          Copy-Item src-tauri/target/release/wheelie.exe "release/Wheelie_${v}_x64-portable.exe"
+          Get-ChildItem release/*.exe | ForEach-Object {
+            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+          } | Set-Content -Path release/SHA256SUMS.txt -Encoding ascii
+          Get-Content release/SHA256SUMS.txt
+
+          $footer = @(
+            "",
+            "---",
+            "",
+            "### Install",
+            "",
+            "- **Installer (recommended):** download ``Wheelie_${v}_x64-setup.exe`` and run it. No administrator rights needed.",
+            "- **Portable:** download ``Wheelie_${v}_x64-portable.exe`` and run it from anywhere.",
+            "- Windows SmartScreen will warn that the app is unsigned: choose **More info**, then **Run anyway**.",
+            "- Verify a download against ``SHA256SUMS.txt`` with ``Get-FileHash <file> -Algorithm SHA256``.",
+            "",
+            "More in the [installation guide](https://github.com/$env:REPO/blob/$env:TAG/docs/installation.md)."
+          )
+          Add-Content -Path release-notes.md -Value $footer -Encoding utf8
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Wheelie ${{ github.ref_name }}
+          body_path: release-notes.md
+          files: release/*
+          fail_on_unmatched_files: true
+          # v1.0.0-beta.1 and friends are published as pre-releases.
+          prerelease: ${{ contains(github.ref_name, '-') }}

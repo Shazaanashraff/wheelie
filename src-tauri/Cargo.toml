@@ -2,6 +2,9 @@
 name = "wheelie"
 version = "0.1.0"
 description = "A radial menu for Windows"
+license = "MIT"
+repository = "https://github.com/Shazaanashraff/wheelie"
+readme = "../README.md"
 edition = "2021"
 
 [build-dependencies]

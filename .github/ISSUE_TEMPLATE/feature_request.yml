@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest a new tool, setting, or improvement.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome. The more you explain the problem you are trying to solve, the easier it is to find a good solution, so start there rather than with the implementation.
+        Wheelie aims to stay small, quick and private, so requests are weighed against that. See the [roadmap](https://github.com/Shazaanashraff/wheelie#roadmap) for what is already planned.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the situation or frustration behind the request.
+      placeholder: "When I'm writing, I often need to ..., but today I have to ..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like Wheelie to do?
+      description: Your ideal behaviour. For a new tool, say what it would show and how you would use it from the wheel.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Other ways you handle this today, or similar features in other apps.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of change is it?
+      options:
+        - A new tool for the wheel
+        - A change to an existing tool
+        - Appearance, themes or motion
+        - The wheel itself (trigger, layout, behaviour)
+        - Install, update or startup
+        - Something else
+    validations:
+      required: true
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contributing
+      options:
+        - label: I'd be willing to help build this. (See CONTRIBUTING.md.)

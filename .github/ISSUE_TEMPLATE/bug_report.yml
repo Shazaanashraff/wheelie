@@ -1,0 +1,72 @@
+name: Bug report
+description: Something in Wheelie isn't working the way it should.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. A clear report is the fastest way to get it fixed.
+        Please check the [existing issues](https://github.com/Shazaanashraff/wheelie/issues?q=is%3Aissue) first in case it has already been reported.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the problem, and what you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest set of steps that triggers it.
+      placeholder: |
+        1. Hold Alt + Space
+        2. Move to the Calculator slice
+        3. Release
+        4. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Wheelie version
+      description: Shown in the Wheelie app under General, then About, and in the installer's file name.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: Press Win + R, type `winver`, and copy the version line.
+      placeholder: "Windows 11 23H2 (build 22631)"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it happen?
+      options:
+        - The wheel (opening, hovering, choosing)
+        - A tool (calculator, notes, clock, ...)
+        - The Wheelie app window (themes, settings, ring editor)
+        - Voice notes
+        - Install, start with Windows, or the tray icon
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots or a screen recording help a lot. Mention other software that might interfere, such as other hotkey or mouse tools, remote desktop, or games running full screen.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues and this isn't a duplicate.
+          required: true
+        - label: This is not a security vulnerability. (Those go through [private reporting](https://github.com/Shazaanashraff/wheelie/security/advisories/new), see SECURITY.md.)
+          required: true
