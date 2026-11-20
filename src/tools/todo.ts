@@ -12,6 +12,7 @@ interface Item {
 export const todo: Tool = {
   id: "todo",
   name: "To-do",
+  desc: "A quick checklist",
   size: [380, 480],
   mount(root) {
     let items = store.get<Item[]>("todo.items", []);

@@ -1,6 +1,9 @@
 import { invoke } from "../bridge.ts";
 import { h, icon } from "../dom.ts";
-import { ICONS } from "../icons.ts";
+import { ic, ICONS } from "../icons.ts";
+import { loadSettings } from "../settingsStore.ts";
+import { Dictation } from "../voice/dictation.ts";
+import { joinDictation } from "../voice/dictationText.ts";
 import type { Tool } from "./types.ts";
 
 interface Meta {
@@ -54,14 +57,22 @@ function confirmButton(label: string, onConfirm: () => void, cls: string, conten
 export const notes: Tool = {
   id: "notes",
   name: "Notes",
+  desc: "Notes saved as text files, plus voice notes",
   size: [460, 540],
-  mount(root) {
+  mount(root, ctx) {
     let flushNow: (() => Promise<void>) | null = null;
+    let dictation: Dictation | null = null;
     let dirPath = "";
     let disposed = false;
 
+    const leaveEditor = () => {
+      dictation?.dispose();
+      dictation = null;
+    };
+
     // ---------- history ----------
     async function showHistory(autoNew = false) {
+      leaveEditor();
       if (flushNow) await flushNow();
       flushNow = null;
       if (disposed) return;
@@ -78,7 +89,7 @@ export const notes: Tool = {
       if (autoNew && metas.length === 0) return void openNote(newId(), true);
 
       const search = h("input", { class: "input", placeholder: "Search your notes", autocomplete: "off" });
-      const list = h("div", { class: "note-list" });
+      const list = h("div", { class: "note-list stg" });
       const count = h("span", {});
 
       const render = () => {
@@ -114,12 +125,18 @@ export const notes: Tool = {
             ),
           ),
         );
-        if (!shown.length) list.append(h("div", { class: "empty" }, metas.length ? "No notes match." : "No notes yet. Press New note to write your first one."));
+        if (!shown.length) list.append(h("div", { class: "empty" }, metas.length ? "No notes match." : "No notes yet. Press New, or the mic to speak one."));
       };
       search.addEventListener("input", render);
 
       root.replaceChildren(
-        h("div", { class: "pad row" }, search, h("button", { class: "btn primary", onClick: () => openNote(newId(), true) }, icon(ICONS.plus, 15), "New")),
+        h(
+          "div",
+          { class: "pad row" },
+          search,
+          h("button", { class: "icon-btn voice-new anim-host", title: "New voice note", onClick: () => openNote(newId(), true, true) }, ic("voice", 19)),
+          h("button", { class: "btn primary", onClick: () => openNote(newId(), true) }, icon(ICONS.plus, 15), "New"),
+        ),
         list,
         h(
           "div",
@@ -133,7 +150,8 @@ export const notes: Tool = {
     }
 
     // ---------- editor ----------
-    async function openNote(id: string, isNew = false) {
+    async function openNote(id: string, isNew = false, startVoice = false) {
+      leaveEditor();
       let text = "";
       if (!isNew) {
         try {
@@ -146,9 +164,9 @@ export const notes: Tool = {
       if (disposed) return;
 
       let saved = text;
-      let touched = isNew ? false : true;
+      let touched = !isNew;
       let timer: number | undefined;
-      const area = h("textarea", { class: "note-area", placeholder: "Start typing. Saved to a text file as you go.", spellcheck: true });
+      const area = h("textarea", { class: "note-area", placeholder: "Start typing, or press the mic and speak. Saved to a text file as you go.", spellcheck: true });
       area.value = text;
       const status = h("span", { class: "save-status" }, isNew ? "" : "Saved");
 
@@ -175,18 +193,35 @@ export const notes: Tool = {
       };
       flushNow = finish;
 
-      area.addEventListener("input", () => {
+      const queueSave = () => {
         status.textContent = "Saving…";
         status.classList.remove("err");
         clearTimeout(timer);
         timer = window.setTimeout(save, 400);
-      });
+      };
+      area.addEventListener("input", queueSave);
       area.addEventListener("keydown", (e) => {
         if (e.ctrlKey && e.key.toLowerCase() === "s") {
           e.preventDefault();
           void save();
         }
       });
+
+      // Dictated text goes in at the cursor (or the end), then saves like typing.
+      const dict = new Dictation({
+        model: () => loadSettings().voiceModel,
+        keepOpen: ctx.keepOpen,
+        onText: (t) => {
+          const atEnd = !area.selectionStart && area.selectionStart !== 0 ? area.value.length : area.selectionStart!;
+          const before = area.value.slice(0, atEnd);
+          const piece = joinDictation(before, t);
+          area.setRangeText(piece, atEnd, area.selectionEnd ?? atEnd, "end");
+          area.dispatchEvent(new Event("input"));
+          area.focus();
+          area.scrollTop = area.scrollHeight;
+        },
+      });
+      dictation = dict;
 
       root.replaceChildren(
         h(
@@ -195,6 +230,7 @@ export const notes: Tool = {
           h("button", { class: "btn back", onClick: () => void showHistory() }, "‹ All notes"),
           h("span", { class: "grow" }),
           status,
+          dict.button,
           h("button", { class: "icon-btn", title: "Copy note", onClick: () => navigator.clipboard?.writeText(area.value).catch(() => {}) }, icon(ICONS.clipboard, 16)),
           confirmButton(
             "Delete note",
@@ -210,15 +246,18 @@ export const notes: Tool = {
             icon(ICONS.trash, 16),
           ),
         ),
+        dict.bar,
         area,
       );
       area.focus();
+      if (startVoice) void dict.start();
     }
 
     void showHistory(true);
 
     return () => {
       disposed = true;
+      leaveEditor();
       void flushNow?.(); // never lose the last keystrokes when the panel closes
     };
   },

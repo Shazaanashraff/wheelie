@@ -38,6 +38,7 @@ const MAIN: Key[][] = [
 export const calc: Tool = {
   id: "calc",
   name: "Calculator",
+  desc: "Keypad calculator with history",
   size: [340, 560],
   mount(root) {
     let state: CalcState = INITIAL;

@@ -5,6 +5,7 @@ import type { Tool } from "./types.ts";
 export const clipboard: Tool = {
   id: "clipboard",
   name: "Clipboard",
+  desc: "Clipboard history, click to paste",
   size: [420, 520],
   mount(root, ctx) {
     let items: string[] = [];

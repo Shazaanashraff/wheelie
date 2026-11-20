@@ -17,13 +17,33 @@ Inspired by [Helix](https://tryhelix.app/) (Mac). This is an independent rewrite
 
 The trigger keys, theme, accent colour and which tools are in the ring (and their order) are all in **Settings**.
 
+### The ring, slots and the tool library
+
+The ring has **8 slots**. Each slot holds either a **tool from the library** or a **launcher** that runs an app, folder or link the moment you release over it (no panel). Open **Settings → Ring** to change what is in each slot, reorder, or empty a slot (at least 2 must stay). Picking a tool that is already in another slot swaps the two.
+
+Library: Calculator · Clock · Notes · To-do · Clipboard · Units · Links · Apps · **Colours** (eyedropper + saved palette) · **Snippets** (saved text, `{date}` `{time}` `{weekday}` filled in, click to paste) · **Passwords** (strong random passwords) · **World clock**
+
+### Look and motion
+
+**Settings → Look**: 8 themes (Dark, Light, Midnight, Graphite, Sunset, Forest, Rose, Tinted), 10 accent colours plus a custom picker, icon colour (match theme / accent / colourful), icon style (line / duotone), icon weight, ring transparency, and motion (Full / Subtle / Off; also respects the Windows reduced-motion setting).
+
+The icons are Wheelie's own set, drawn as SVG, and they animate on hover (the stopwatch hand sweeps, the lock opens, the chain links part, calculator keys ripple...). The ring blooms open and slices lean toward your pointer.
+
+### Voice notes
+
+In **Notes**, press the mic (or the mic next to *New* for a brand-new voice note), speak, then press **Done**. Your words are written into the note and saved as text like anything you type.
+
+- **Private:** speech is turned into text **on your PC** by a small Whisper model. Audio is never uploaded and never saved, only the text.
+- **First use:** the model (about 45 MB) downloads once from Hugging Face, then works offline. You can pre-download it, or pick a more accurate or multilingual model, in **Settings → Voice**.
+- Windows may ask to allow microphone access the first time. If it was blocked, enable it in *Settings → Privacy & security → Microphone*.
+
 ### Tools (v1)
 
 - **Calculator**: its own keypad and design (nothing from Windows is launched). Type on the keyboard or click keys, live result as you type, `fx` for scientific keys, history. `=` copies the result.
 - **Notes**: every note is a plain **`.txt` file** in `Documents\Wheelie Notes`, so you can open, back up or sync them with anything. The Notes tool shows a searchable history (newest first, with a preview and date), autosaves as you type, and never creates empty files. Deleting asks for a second click.
 - **Clock** (stopwatch, timer, pomodoro) · **To-do** · **Clipboard history** (click to paste) · **Unit converter** · **Links** · **App launcher**
 
-![All screens](docs/previews/00-overview.png)
+![All screens](docs/previews/00-overview-v2.png)
 
 More screens are in [`docs/previews`](docs/previews).
 
@@ -67,9 +87,13 @@ src-tauri/src/
   notes.rs      Tauri commands wrapping notes_core
   main.rs       Window placement, tray, commands exposed to the UI
 src/
-  ring.ts       Ring rendering + slice hit-testing
-  main.ts       Ring/panel state machine
-  tools/        One file per tool
+  ring.ts       Ring rendering, hit-testing, bloom/lean motion
+  main.ts       Ring/panel state machine, slot activation
+  model.ts      Settings + slot model (migration from older settings), unit tested
+  themes.ts     Theme palettes and applying appearance
+  icons.ts      Wheelie's animated icon set;  iconMotion.css: the motion
+  tools/        One file per tool; registry.ts is the library
+  voice/        Recorder, Whisper worker, dictation controller
   bridge.ts     Seam to Rust; simulated in a plain browser
 ```
 

@@ -21,6 +21,7 @@ const DEFAULTS: App[] = [
 export const apps: Tool = {
   id: "apps",
   name: "Apps",
+  desc: "Launch your favourite apps",
   size: [400, 480],
   mount(root, ctx) {
     let items = store.get<App[]>("apps.items", DEFAULTS);

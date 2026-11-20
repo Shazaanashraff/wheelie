@@ -26,6 +26,7 @@ export function normalizeUrl(raw: string): string | null {
 export const links: Tool = {
   id: "links",
   name: "Links",
+  desc: "Links you open all the time",
   size: [400, 480],
   mount(root, ctx) {
     let items = store.get<Link[]>("links.items", []);

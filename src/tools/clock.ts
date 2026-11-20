@@ -80,6 +80,7 @@ export function watchAlarms(onFire: (message: string) => void): void {
 export const clock: Tool = {
   id: "clock",
   name: "Clock",
+  desc: "Stopwatch, timer and pomodoro",
   size: [360, 440],
   mount(root) {
     const body = h("div", { class: "clock-body" });

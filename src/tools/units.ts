@@ -14,6 +14,7 @@ interface State {
 export const units: Tool = {
   id: "units",
   name: "Units",
+  desc: "Convert length, weight, temperature and more",
   size: [380, 500],
   mount(root) {
     let st = store.get<State>("units.state", { cat: "length", from: "m", to: "ft", value: "1" });

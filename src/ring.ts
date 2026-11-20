@@ -1,14 +1,16 @@
-import { icon } from "./dom.ts";
-import { ICONS } from "./icons.ts";
+import { ic } from "./icons.ts";
 
 export const RING_SIZE = 560;
 export const R_IN = 62;
 export const R_OUT = 218;
 const GAP = 0.025; // radians trimmed from each slice edge
+const LEAN = 6; // px a hovered slice moves toward the pointer
 
 export interface Slice {
   id: string;
   name: string;
+  /** Icon id from the icon set. */
+  icon: string;
 }
 
 /** Which slice the pointer (relative to the ring centre) is over; -1 = hub / none. Slice 0 is at the top, going clockwise. */
@@ -68,18 +70,23 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
     const sg = document.createElementNS(ns, "g");
     sg.setAttribute("class", "slice");
     sg.setAttribute("data-id", s.id);
+    const mid = n === 1 ? 0 : (i * 2 * Math.PI) / n;
+    sg.style.setProperty("--i", String(i));
+    sg.style.setProperty("--dx", `${f(Math.sin(mid) * LEAN)}px`);
+    sg.style.setProperty("--dy", `${f(-Math.cos(mid) * LEAN)}px`);
 
     const path = document.createElementNS(ns, "path");
     path.setAttribute("d", slicePath(i, n));
     path.setAttribute("fill-rule", "evenodd");
     sg.append(path);
 
-    const mid = n === 1 ? 0 : (i * 2 * Math.PI) / n;
     const [ix, iy] = pol((R_IN + R_OUT) / 2 + 2, mid);
     const fo = document.createElementNS(ns, "g");
     fo.setAttribute("transform", `translate(${f(ix - 15)} ${f(iy - 18)})`);
-    fo.setAttribute("class", "slice-icon");
-    fo.append(icon(ICONS[s.id] ?? ICONS.apps, 30));
+    const inner = document.createElementNS(ns, "g");
+    inner.setAttribute("class", "slice-icon");
+    inner.append(ic(s.icon, 30));
+    fo.append(inner);
     sg.append(fo);
 
     const num = document.createElementNS(ns, "text");
@@ -93,6 +100,11 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
     g.append(sg);
     groups.push(sg);
   });
+
+  const orbit = document.createElementNS(ns, "circle");
+  orbit.setAttribute("r", String(R_IN - 3));
+  orbit.setAttribute("class", "hub-orbit");
+  g.append(orbit);
 
   const hub = document.createElementNS(ns, "circle");
   hub.setAttribute("r", String(R_IN - 6));
@@ -108,6 +120,13 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
 
   root.append(svg);
 
+  // Slices grow out from the ring centre: give each one that point as its transform origin.
+  for (const sg of groups) {
+    const b = sg.getBBox();
+    sg.style.transformBox = "fill-box";
+    sg.style.transformOrigin = `${f(-b.x)}px ${f(-b.y)}px`;
+  }
+
   let current = -1;
   return {
     sliceCount: n,
@@ -117,6 +136,9 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
       groups.forEach((sg, k) => sg.classList.toggle("hover", k === i));
       label.textContent = i >= 0 ? slices[i].name : "Wheelie";
       label.classList.toggle("active", i >= 0);
+      label.classList.remove("swap");
+      void (label as unknown as SVGElement).getBoundingClientRect(); // restart the label animation
+      label.classList.add("swap");
     },
   };
 }

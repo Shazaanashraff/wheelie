@@ -1,0 +1,62 @@
+/* Wheelie icon set: look (colour, weight, duotone) and motion. */
+
+.ic { overflow: visible; stroke-width: var(--icon-stroke, 1.7); flex: none; }
+.ic * { transform-box: fill-box; transform-origin: center; }
+.ic .f { fill: none; transition: fill 160ms; }
+[data-icon-style="duotone"] .ic .f { fill: color-mix(in srgb, currentColor 24%, transparent); }
+
+/* ---------- colour modes ---------- */
+[data-icon-color="accent"] .ic { color: var(--accent); }
+[data-icon-color="colorful"] .ic { color: var(--tool-color); }
+/* Bright tool colours wash out on pale slices, so deepen them on light themes. */
+[data-scheme="light"][data-icon-color="colorful"] .ic { color: color-mix(in srgb, var(--tool-color) 58%, #000); }
+/* On a highlighted slice the fill is the accent colour, so icons go white for contrast. */
+.slice.hover .ic { color: #fff !important; }
+
+/* ---------- keyframes ---------- */
+@keyframes k-pulse { 0%, 100% { transform: scale(1); } 40% { transform: scale(2); } }
+@keyframes sweep { to { transform: rotate(360deg); } }
+@keyframes draw { 0% { stroke-dasharray: 1; stroke-dashoffset: 1; } 55%, 100% { stroke-dasharray: 1; stroke-dashoffset: 0; } }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-1.8px); } 60% { transform: translateY(0.4px); } }
+@keyframes nudge-r { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(2px); } }
+@keyframes nudge-l { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-2px); } }
+@keyframes apart-a { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(1.6px, -1.6px); } }
+@keyframes apart-b { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-1.6px, 1.6px); } }
+@keyframes pop { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.22); } }
+@keyframes blink { 0%, 45% { opacity: 1; } 55%, 100% { opacity: 0.1; } }
+@keyframes unlock { 0%, 100% { transform: translateY(0); } 40%, 60% { transform: translateY(-2.4px) rotate(-8deg); } }
+@keyframes spin-mer { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.08); } }
+@keyframes slide-l { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-7px); } }
+@keyframes slide-r { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(7px); } }
+@keyframes wave { 0% { transform: scaleY(0.6); opacity: 1; } 100% { transform: scaleY(1.5); opacity: 0.15; } }
+@keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes wobble { 0%, 100% { transform: rotate(0) scale(1); } 25% { transform: rotate(-7deg) scale(1.06); } 75% { transform: rotate(7deg) scale(1.06); } }
+
+/* ---------- when an icon plays ---------- */
+:is(.slice.hover, .anim-host:hover, .anim-host:focus-visible, .anim-play) {
+  & .ic-calc .k { animation: k-pulse 0.9s ease-in-out infinite; animation-delay: calc(var(--i) * 90ms); }
+  & .ic-clock .hand { animation: sweep 1.2s cubic-bezier(0.5, 0, 0.3, 1) infinite; transform-box: view-box; transform-origin: 12px 13.5px; }
+  & .ic-notes .ln, & .ic-clipboard .ln, & .ic-todo .ln, & .ic-todo .ck { animation: draw 1.1s ease-out infinite; animation-delay: calc(var(--i) * 160ms); }
+  & .ic-clipboard .clip { animation: hop 1.1s ease-in-out infinite; }
+  & .ic-units .a1 { animation: nudge-r 1s ease-in-out infinite; }
+  & .ic-units .a2 { animation: nudge-l 1s ease-in-out infinite; }
+  & .ic-links .l1 { animation: apart-a 1s ease-in-out infinite; }
+  & .ic-links .l2 { animation: apart-b 1s ease-in-out infinite; }
+  & .ic-apps .sq, & .ic-colors .pt { animation: pop 1s ease-in-out infinite; animation-delay: calc(var(--i) * 120ms); }
+  & .ic-snippets .bl { animation: nudge-r 1s ease-in-out infinite; }
+  & .ic-snippets .br { animation: nudge-l 1s ease-in-out infinite; }
+  & .ic-snippets .cur { animation: blink 0.9s steps(1) infinite; }
+  & .ic-passwords .shackle { animation: unlock 1.4s ease-in-out infinite; transform-origin: 50% 100%; }
+  & .ic-worldclock .mer, & .ic-globe .mer { animation: spin-mer 1.6s ease-in-out infinite; }
+  & .ic-settings .kn1 { animation: slide-l 1.3s ease-in-out infinite; }
+  & .ic-settings .kn2 { animation: slide-r 1.3s ease-in-out infinite; }
+  & .ic-voice .w1 { animation: wave 0.9s ease-out infinite; }
+  & .ic-voice .w2 { animation: wave 0.9s ease-out infinite 0.25s; }
+  & .ic-voice .mic { animation: beat 0.9s ease-in-out infinite; }
+  & .ic-g .gw { animation: wobble 1s ease-in-out infinite; }
+}
+
+/* Motion preferences: "subtle" plays each icon once, "off" never. */
+[data-motion="subtle"] .ic * { animation-iteration-count: 1 !important; }
+[data-motion="off"] .ic * { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .ic * { animation: none !important; } }

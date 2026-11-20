@@ -8,9 +8,12 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "node --test \"src/**/*.test.ts\"",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "predev": "node scripts/copy-ort.mjs",
+    "prebuild": "node scripts/copy-ort.mjs"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.2",
     "@tauri-apps/api": "^2"
   },
   "devDependencies": {
