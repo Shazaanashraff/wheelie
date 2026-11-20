@@ -1,4 +1,4 @@
-import type { VoiceModel } from "../model.ts";
+import type { VoiceModel } from "../core/model.ts";
 
 export interface ModelInfo {
   id: VoiceModel;

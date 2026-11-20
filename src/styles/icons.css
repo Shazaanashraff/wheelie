@@ -6,12 +6,15 @@
 [data-icon-style="duotone"] .ic .f { fill: color-mix(in srgb, currentColor 24%, transparent); }
 
 /* ---------- colour modes ---------- */
-[data-icon-color="accent"] .ic { color: var(--accent); }
-[data-icon-color="colorful"] .ic { color: var(--tool-color); }
+/* One colour for every tool and launcher icon, everywhere: the wheel, panel headers, the sidebar,
+   cards. Components must not set their own icon colour. "Accent" and "Colourful" are opt-in. */
+.ic-tool { color: var(--fg); }
+[data-icon-color="accent"] .ic-tool { color: var(--accent); }
+[data-icon-color="colorful"] .ic-tool { color: var(--tool-color); }
 /* Bright tool colours wash out on pale slices, so deepen them on light themes. */
-[data-scheme="light"][data-icon-color="colorful"] .ic { color: color-mix(in srgb, var(--tool-color) 58%, #000); }
-/* On a highlighted slice the fill is the accent colour, so icons go white for contrast. */
-.slice.hover .ic { color: #fff !important; }
+[data-scheme="light"][data-icon-color="colorful"] .ic-tool { color: color-mix(in srgb, var(--tool-color) 58%, #000); }
+/* On a highlighted slice the fill is the accent colour, so icons switch to the contrasting colour. */
+.slice.hover .ic { color: var(--on-accent) !important; }
 
 /* ---------- keyframes ---------- */
 @keyframes k-pulse { 0%, 100% { transform: scale(1); } 40% { transform: scale(2); } }

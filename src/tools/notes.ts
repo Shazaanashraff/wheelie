@@ -1,7 +1,7 @@
-import { invoke } from "../bridge.ts";
-import { h, icon } from "../dom.ts";
-import { ic, ICONS } from "../icons.ts";
-import { loadSettings } from "../settingsStore.ts";
+import { invoke } from "../core/bridge.ts";
+import { h, icon } from "../core/dom.ts";
+import { ic, ICONS } from "../core/icons.ts";
+import { loadSettings } from "../core/settingsStore.ts";
 import { Dictation } from "../voice/dictation.ts";
 import { joinDictation } from "../voice/dictationText.ts";
 import type { Tool } from "./types.ts";

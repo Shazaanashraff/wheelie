@@ -1,4 +1,4 @@
-import type { Settings } from "../model.ts";
+import type { Settings } from "../core/model.ts";
 
 export type PageId = "home" | "appearance" | "ring" | "library" | "voice" | "general";
 

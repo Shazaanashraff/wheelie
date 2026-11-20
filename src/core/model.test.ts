@@ -89,3 +89,8 @@ test("ringSlots skips empties and keeps order", () => {
   const s = assignTool([...defaultSlots()], 1, "colors");
   assert.equal(ringSlots(clearSlot(s, 0)).length, 7);
 });
+
+test("the default accent is empty, meaning 'use the theme's own'", () => {
+  assert.equal(DEFAULT_SETTINGS.accent, "");
+  assert.equal(migrate({ accent: "" }, TOOLS, THEMES).accent, "");
+});

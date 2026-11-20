@@ -1,5 +1,5 @@
-import { h } from "../dom.ts";
-import { store } from "../store.ts";
+import { h } from "../core/dom.ts";
+import { store } from "../core/store.ts";
 import type { Tool } from "./types.ts";
 
 type Tab = "stopwatch" | "timer" | "pomodoro";

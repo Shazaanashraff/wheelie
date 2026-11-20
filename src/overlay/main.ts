@@ -1,18 +1,18 @@
-import "./style.css";
-import "./iconMotion.css";
-import { inTauri, installDevTrigger, invoke, listen } from "./bridge.ts";
-import { h, icon } from "./dom.ts";
-import { ic, UI_ICONS } from "./icons.ts";
+import "../styles/base.css";
+import "../styles/icons.css";
+import { inTauri, installDevTrigger, invoke, listen } from "../core/bridge.ts";
+import { h, icon } from "../core/dom.ts";
+import { ic, UI_ICONS } from "../core/icons.ts";
 import { placePanel, type Box } from "./layout.ts";
-import { ringSlots, type Settings, type Slot } from "./model.ts";
-import { loop, setMotionLevel } from "./motion.ts";
+import { ringSlots, type Settings, type Slot } from "../core/model.ts";
+import { loop, setMotionLevel } from "../core/motion.ts";
 import { panelIn, panelOut } from "./panelmotion.ts";
 import { hitTest, renderRing, type RingView, type Slice } from "./ring.ts";
-import { loadSettings } from "./settingsStore.ts";
-import { applyAppearance } from "./themes.ts";
-import { watchAlarms } from "./tools/clock.ts";
-import { LIBRARY } from "./tools/registry.ts";
-import type { Tool, ToolCtx } from "./tools/types.ts";
+import { loadSettings } from "../core/settingsStore.ts";
+import { applyAppearance } from "../core/themes.ts";
+import { watchAlarms } from "../tools/clock.ts";
+import { LIBRARY } from "../tools/registry.ts";
+import type { Tool, ToolCtx } from "../tools/types.ts";
 
 /**
  * The overlay: the quick-touch half of Wheelie. A fixed-size transparent window that shows

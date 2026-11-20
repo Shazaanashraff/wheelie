@@ -1,5 +1,5 @@
-import { ic } from "./icons.ts";
-import { SPRINGS, Spring, loop, motionLevel, springEasing } from "./motion.ts";
+import { ic } from "../core/icons.ts";
+import { SPRINGS, Spring, loop, motionLevel, springEasing } from "../core/motion.ts";
 import { R_IN, R_OUT, hitTest, influence, polar, sliceAngle, sliceCenter } from "./ringmath.ts";
 
 export { R_IN, R_OUT, hitTest };
@@ -62,13 +62,10 @@ export interface RingOptions {
   animateIn?: boolean;
 }
 
-let nextId = 0;
-
 /** Build the ring into `root`, centred at (cx, cy) in CSS px. */
 export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: number, opts: RingOptions = {}): RingView {
   const ns = "http://www.w3.org/2000/svg";
   const n = slices.length;
-  const uid = ++nextId;
   const el = <K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string> = {}) => {
     const e = document.createElementNS(ns, tag);
     for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
@@ -78,15 +75,6 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
 
   const svg = el("svg", { class: "ring-svg" });
   svg.style.transformOrigin = `${cx}px ${cy}px`;
-
-  // A soft specular highlight that follows the pointer, kept inside the ring's outline.
-  const defs = el("defs");
-  const grad = el("radialGradient", { id: `spot-${uid}` });
-  grad.append(el("stop", { offset: "0%", "stop-color": "#fff", "stop-opacity": "0.2" }), el("stop", { offset: "100%", "stop-color": "#fff", "stop-opacity": "0" }));
-  const clip = el("clipPath", { id: `clip-${uid}` });
-  clip.append(el("circle", { r: String(R_OUT) }));
-  defs.append(grad, clip);
-  svg.append(defs);
 
   const g = el("g", { transform: `translate(${cx} ${cy})`, class: "ring-g" });
   svg.append(g);
@@ -116,11 +104,6 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
     parts.push({ wrap, slice, icon, lx: Math.sin(mid) * LEAN, ly: -Math.cos(mid) * LEAN });
   });
 
-  const spotWrap = el("g", { "clip-path": `url(#clip-${uid})`, "pointer-events": "none" });
-  const spot = el("circle", { r: "150", fill: `url(#spot-${uid})`, opacity: "0" });
-  spotWrap.append(spot);
-  g.append(spotWrap);
-
   const orbit = el("circle", { r: String(R_IN - 3), class: "hub-orbit" });
   const hub = el("circle", { r: String(R_IN - 6), class: "hub" });
   const label = el("text", { class: "hub-label", "text-anchor": "middle", y: "5" });
@@ -141,10 +124,7 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
   const bump = slices.map(() => new Spring(0, SPRINGS.bouncy)); // choosing: pulse
   const tiltX = new Spring(0, SPRINGS.soft);
   const tiltY = new Spring(0, SPRINGS.soft);
-  const spotX = new Spring(0, { stiffness: 260, damping: 30 });
-  const spotY = new Spring(0, { stiffness: 260, damping: 30 });
-  const spotA = new Spring(0, SPRINGS.smooth);
-  const all = [...lift, ...gone, ...bump, tiltX, tiltY, spotX, spotY, spotA];
+  const all = [...lift, ...gone, ...bump, tiltX, tiltY];
 
   let hover = -1;
   let ptr = { dx: 0, dy: 0 };
@@ -162,9 +142,6 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
     });
     const tilt = Math.abs(tiltX.value) > 0.01 || Math.abs(tiltY.value) > 0.01;
     svg.style.transform = tilt ? `perspective(900px) rotateX(${tiltX.value.toFixed(3)}deg) rotateY(${tiltY.value.toFixed(3)}deg)` : "";
-    spot.setAttribute("cx", f(spotX.value));
-    spot.setAttribute("cy", f(spotY.value));
-    spot.setAttribute("opacity", Math.max(0, Math.min(1, spotA.value)).toFixed(3));
   };
 
   const tick = (dt: number) => {
@@ -185,9 +162,6 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
     const inRing = Math.hypot(ptr.dx, ptr.dy) > R_IN * 0.9;
     tiltX.set(full && inRing ? -ny * 3.2 : 0);
     tiltY.set(full && inRing ? nx * 3.2 : 0);
-    spotX.set(ptr.dx);
-    spotY.set(ptr.dy);
-    spotA.set(full && inRing ? 1 : 0);
     if (level === "off") {
       all.forEach((s) => s.snap(s.target));
       apply();
@@ -230,7 +204,6 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
         loop.add(tick);
       }, level === "full" ? 80 : 0);
       gone.forEach((s, j) => s.set(j === i ? 0 : 1));
-      spotA.set(0);
       tiltX.set(0);
       tiltY.set(0);
       if (level === "off") {
@@ -278,11 +251,10 @@ export function renderRing(root: HTMLElement, slices: Slice[], cx: number, cy: n
     const bounce = springEasing(SPRINGS.bouncy);
     const soft = springEasing(SPRINGS.soft);
     const blur = full ? 8 : 0;
-    const shadow = "drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45))";
     svg.animate(
       [
-        { opacity: 0, transform: "scale(0.86)", filter: `blur(${blur}px) ${shadow}` },
-        { opacity: 1, transform: "scale(1)", filter: `blur(0px) ${shadow}` },
+        { opacity: 0, transform: "scale(0.86)", filter: `blur(${blur}px)` },
+        { opacity: 1, transform: "scale(1)", filter: "blur(0px)" },
       ],
       { duration: soft.duration, easing: soft.easing, fill: "backwards" },
     );

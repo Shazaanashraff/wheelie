@@ -2,7 +2,7 @@
  * Wheelie's own icon set: hand-drawn 24x24 line icons with built-in motion.
  *
  * Parts that move carry a class (`.k`, `.hand`, `.shackle` ...). The animation
- * rules live in `iconMotion.css`, and play while a slice is hovered, an
+ * rules live in `styles/icons.css`, and play while a slice is hovered, an
  * `.anim-host` is hovered, or an `.anim-play` ancestor says so.
  *
  * Colour, weight and duotone fill come from CSS variables, so every icon
@@ -91,7 +91,9 @@ const NS = "http://www.w3.org/2000/svg";
 export function ic(id: string, size = 22): SVGSVGElement {
   const svg = document.createElementNS(NS, "svg");
   const generic = id in LAUNCH_ICONS && !(id in TOOL_ICONS);
-  svg.setAttribute("class", `ic ic-${id}${generic ? " ic-g" : ""}`);
+  // Tool and launcher icons share one colour (see styles/icons.css); UI glyphs inherit from their button.
+  const brand = id in TOOL_ICONS || id in LAUNCH_ICONS;
+  svg.setAttribute("class", `ic ic-${id}${brand ? " ic-tool" : ""}${generic ? " ic-g" : ""}`);
   svg.setAttribute("viewBox", "0 0 24 24");
   svg.setAttribute("width", String(size));
   svg.setAttribute("height", String(size));

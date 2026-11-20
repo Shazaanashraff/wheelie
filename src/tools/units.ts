@@ -1,6 +1,6 @@
-import { h, icon } from "../dom.ts";
-import { ICONS } from "../icons.ts";
-import { store } from "../store.ts";
+import { h, icon } from "../core/dom.ts";
+import { ICONS } from "../core/icons.ts";
+import { store } from "../core/store.ts";
 import type { Tool } from "./types.ts";
 import { CATEGORIES, convert, formatNum } from "./unitdata.ts";
 

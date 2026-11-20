@@ -1,6 +1,6 @@
-import { h } from "../dom.ts";
-import { ic, UI_ICONS } from "../icons.ts";
-import type { VoiceModel } from "../model.ts";
+import { h } from "../core/dom.ts";
+import { ic, UI_ICONS } from "../core/icons.ts";
+import type { VoiceModel } from "../core/model.ts";
 import { cleanTranscript, formatClock } from "./dictationText.ts";
 import { voice } from "./engine.ts";
 import { isModelReady } from "./models.ts";

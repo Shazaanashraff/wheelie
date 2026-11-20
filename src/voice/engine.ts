@@ -1,4 +1,4 @@
-import type { VoiceModel } from "../model.ts";
+import type { VoiceModel } from "../core/model.ts";
 import { markModelReady, modelInfo } from "./models.ts";
 
 type Pending = { resolve: (t: string) => void; reject: (e: Error) => void };

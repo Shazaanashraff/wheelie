@@ -1,7 +1,7 @@
-import { invoke } from "../bridge.ts";
-import { h, icon, uid } from "../dom.ts";
-import { ICONS } from "../icons.ts";
-import { store } from "../store.ts";
+import { invoke } from "../core/bridge.ts";
+import { h, icon, uid } from "../core/dom.ts";
+import { ICONS } from "../core/icons.ts";
+import { store } from "../core/store.ts";
 import type { Tool } from "./types.ts";
 
 interface App {

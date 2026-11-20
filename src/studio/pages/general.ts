@@ -1,7 +1,7 @@
-import { invoke } from "../../bridge.ts";
-import { h } from "../../dom.ts";
-import { DEFAULT_SETTINGS, defaultSlots } from "../../model.ts";
-import { confirmButton, group, row, select, setSwitch, toggle } from "../../ui.ts";
+import { invoke } from "../../core/bridge.ts";
+import { h } from "../../core/dom.ts";
+import { DEFAULT_SETTINGS, defaultSlots } from "../../core/model.ts";
+import { confirmButton, group, row, select, setSwitch, toggle } from "../../core/ui.ts";
 import type { Page, StudioCtx } from "../ctx.ts";
 
 export function general(ctx: StudioCtx): Page {

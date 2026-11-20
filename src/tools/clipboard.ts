@@ -1,5 +1,5 @@
-import { invoke, listen } from "../bridge.ts";
-import { h } from "../dom.ts";
+import { invoke, listen } from "../core/bridge.ts";
+import { h } from "../core/dom.ts";
 import type { Tool } from "./types.ts";
 
 export const clipboard: Tool = {

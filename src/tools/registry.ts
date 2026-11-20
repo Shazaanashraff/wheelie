@@ -1,7 +1,7 @@
 /** The tool library: everything that can be put in a ring slot. */
-import type { Slot } from "../model.ts";
-import type { Slice } from "../ring.ts";
-import { registerToolIds } from "../settingsStore.ts";
+import type { Slot } from "../core/model.ts";
+import type { Slice } from "../overlay/ring.ts";
+import { registerToolIds } from "../core/settingsStore.ts";
 import { apps } from "./apps.ts";
 import { calc } from "./calc.ts";
 import { clipboard } from "./clipboard.ts";

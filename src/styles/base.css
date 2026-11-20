@@ -1,5 +1,6 @@
 :root {
   --accent: #7c8cff;
+  --on-accent: #fff;
   --bg: #14161b;
   --bg2: #1c1f26;
   --bg3: #252932;
@@ -31,13 +32,13 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
 /* ---------- ring ---------- */
 /* Motion for the ring (launch, hover, choosing) is spring-driven in ring.ts. */
 #ring { position: fixed; inset: 0; }
-.ring-svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45)); will-change: transform; }
+.ring-svg { display: block; width: 100%; height: 100%; overflow: visible; will-change: transform; }
 .slice > path { fill: var(--seg); stroke: var(--seg-line); stroke-width: 1; transition: fill 110ms; }
 .slice { transform-box: fill-box; transform-origin: center; }
 .slice.hover > path { fill: var(--accent); }
 .slice-icon { color: var(--fg); pointer-events: none; transform-box: fill-box; transform-origin: center; }
 .slice-num { fill: var(--muted); font-size: 11px; pointer-events: none; transition: fill 110ms; }
-.slice.hover .slice-num { fill: rgba(255, 255, 255, 0.8); }
+.slice.hover .slice-num { fill: var(--on-accent); fill-opacity: 0.8; }
 .hub { fill: var(--seg); stroke: var(--seg-line); }
 .hub-orbit { fill: none; stroke: var(--accent); stroke-opacity: 0.55; stroke-width: 1.6; stroke-dasharray: 2 9; stroke-linecap: round; transform-box: fill-box; transform-origin: center; animation: orbit 22s linear infinite; }
 [data-motion="subtle"] .hub-orbit { animation: none; }
@@ -57,7 +58,7 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
   background: var(--bg); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
 }
 .panel-head { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 8px 0 14px; border-bottom: 1px solid var(--line); flex: none; }
-.panel-icon { color: var(--accent); display: flex; pointer-events: none; }
+.panel-icon { display: flex; pointer-events: none; }
 .panel-title { flex: 1; font-weight: 600; pointer-events: none; }
 .panel-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
@@ -75,7 +76,7 @@ select.input { appearance: none; padding-right: 8px; }
 .big-input { font-size: 26px; padding: 10px 12px; margin-bottom: 10px; }
 .btn { padding: 8px 16px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg3); min-width: 92px; }
 .btn:hover:not(:disabled) { border-color: var(--accent); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 .btn:disabled { opacity: 0.4; cursor: default; }
 .icon-btn { background: none; border: 0; padding: 6px; border-radius: 7px; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; }
 .icon-btn:hover:not(:disabled) { background: var(--bg3); color: var(--fg); }
@@ -97,7 +98,7 @@ select.input { appearance: none; padding-right: 8px; }
 .pad > .chips { justify-content: flex-start; }
 .chip { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg2); }
 .chip:hover { border-color: var(--accent); }
-.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
 
 /* ---------- calculator ---------- */
@@ -121,15 +122,16 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .calc-keys:not(.sci) { flex: 1; grid-auto-rows: 1fr; }
 .calc-keys.sci { grid-auto-rows: 38px; }
-.ckey { border: 0; border-radius: 14px; background: var(--bg3); font-size: 22px; transition: transform 60ms, filter 80ms; }
-.ckey:hover { filter: brightness(1.18); }
-.ckey:active, .ckey.pressed { transform: scale(0.94); filter: brightness(1.35); }
+/* Keys react the instant the pointer goes down (calc.ts uses pointerdown): the press is immediate, only the release eases back. */
+.ckey { border: 0; border-radius: 14px; background: var(--bg3); font-size: 22px; touch-action: manipulation; transition: transform 90ms cubic-bezier(0.2, 0.8, 0.3, 1), filter 90ms ease-out; }
+.ckey:hover { filter: brightness(1.14); }
+.ckey:active, .ckey.pressed { transform: scale(0.92); filter: brightness(1.35); transition-duration: 0ms; }
 .ckey.op { background: color-mix(in srgb, var(--accent) 24%, var(--bg3)); color: var(--accent); font-size: 26px; }
 .ckey.fn { background: var(--bg2); color: var(--muted); font-size: 16px; }
 .ckey.util { background: var(--bg2); color: var(--fg); font-size: 20px; }
 .ckey.clear { background: color-mix(in srgb, var(--danger) 20%, var(--bg3)); color: var(--danger); font-size: 20px; font-weight: 600; }
-.ckey.eq { background: var(--accent); color: #fff; font-size: 28px; }
-:root[data-theme="light"] .ckey.fn { background: var(--bg3); }
+.ckey.eq { background: var(--accent); color: var(--on-accent); font-size: 28px; }
+:root[data-scheme="light"] .ckey.fn { background: var(--bg3); }
 .calc-history-panel { flex: 1; overflow-y: auto; }
 .calc-hist-head { display: flex; justify-content: space-between; align-items: center; padding: 2px 6px 8px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
 .calc-row { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 10px 8px; border: 0; background: none; border-radius: 8px; text-align: left; }
@@ -203,7 +205,7 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .app-tile { position: relative; }
 .app-btn { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 6px; background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; }
 .app-btn:hover { border-color: var(--accent); background: var(--bg3); }
-.app-initial { width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.app-initial { width: 38px; height: 38px; border-radius: 10px; background: var(--accent); color: var(--on-accent); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .app-name { font-size: 12px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .tile-x { position: absolute; top: 4px; right: 4px; background: var(--bg); }
 
@@ -239,7 +241,7 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 @keyframes item-in { from { opacity: 0; transform: translateY(9px); } }
 
 /* ---------- small polish ---------- */
-.btn, .chip, .tab, .icon-btn, .ckey, .note-item, .lib-card, .theme-card, .slot-row { transition: background 120ms, border-color 120ms, color 120ms, transform 120ms, filter 120ms, box-shadow 120ms; }
+.btn, .chip, .tab, .icon-btn, .note-item, .lib-card, .theme-card, .slot-row { transition: background 120ms, border-color 120ms, color 120ms, transform 120ms, filter 120ms, box-shadow 120ms; }
 .btn:active:not(:disabled), .chip:active { transform: scale(0.96); }
 .icon-btn:active:not(:disabled) { transform: scale(0.9); }
 .btn.danger-btn { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
@@ -250,7 +252,7 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .seg { display: flex; background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
 .seg-btn { flex: 1; border: 0; background: none; border-radius: 8px; padding: 6px 8px; color: var(--muted); }
 .seg-btn:hover { color: var(--fg); }
-.seg-btn.on { background: var(--accent); color: #fff; font-weight: 600; box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 45%, transparent); }
+.seg-btn.on { background: var(--accent); color: var(--on-accent); font-weight: 600; box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 45%, transparent); }
 .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 6px; }
 .theme-card { border: 2px solid transparent; border-radius: 12px; background: var(--c-bg); padding: 8px; display: flex; flex-direction: column; gap: 6px; align-items: stretch; box-shadow: 0 0 0 1px var(--line); }
 .theme-card:hover { transform: translateY(-2px); }
@@ -299,9 +301,7 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .model-name { font-weight: 600; }
 
 /* ---------- voice (notes) ---------- */
-.voice-new, .mic-btn { color: var(--muted); }
-.voice-new:hover, .mic-btn:hover { color: var(--accent); }
-.mic-btn.recording { color: #ff5d5d; }
+.mic-btn.recording, .mic-btn.recording .ic-tool { color: #ff5d5d; }
 .voice-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: color-mix(in srgb, #ff5d5d 12%, var(--bg)); border-bottom: 1px solid var(--line); flex: none; animation: item-in 220ms var(--ease-out); }
 .voice-bar[data-state="transcribing"] { background: color-mix(in srgb, var(--accent) 14%, var(--bg)); }
 .voice-bar[data-state="error"] { background: color-mix(in srgb, var(--danger) 16%, var(--bg)); }

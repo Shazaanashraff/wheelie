@@ -1,11 +1,11 @@
-import { invoke } from "../../bridge.ts";
-import { h } from "../../dom.ts";
-import { ic } from "../../icons.ts";
-import { ringSlots } from "../../model.ts";
-import type { Slice } from "../../ring.ts";
-import { paletteOf } from "../../themes.ts";
+import { invoke } from "../../core/bridge.ts";
+import { h } from "../../core/dom.ts";
+import { ic } from "../../core/icons.ts";
+import { ringSlots } from "../../core/model.ts";
+import type { Slice } from "../../overlay/ring.ts";
+import { paletteOf } from "../../core/themes.ts";
 import { LIBRARY, sliceOf } from "../../tools/registry.ts";
-import { setSwitch, toggle } from "../../ui.ts";
+import { setSwitch, toggle } from "../../core/ui.ts";
 import { isModelReady, modelInfo } from "../../voice/models.ts";
 import type { Page, StudioCtx } from "../ctx.ts";
 import { ringPreview } from "../preview.ts";

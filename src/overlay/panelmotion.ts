@@ -1,5 +1,5 @@
 /** How a tool panel arrives and leaves. Shared by the overlay and the motion gallery. */
-import { motionLevel, springEasing } from "./motion.ts";
+import { motionLevel, springEasing } from "../core/motion.ts";
 
 /** Lively, settles in about 300ms. */
 export const PANEL_SPRING = { stiffness: 480, damping: 29 };

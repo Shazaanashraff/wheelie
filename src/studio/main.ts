@@ -1,13 +1,13 @@
-import "../style.css";
-import "../iconMotion.css";
+import "../styles/base.css";
+import "../styles/icons.css";
 import "./studio.css";
-import { invoke } from "../bridge.ts";
-import { h } from "../dom.ts";
-import { ic } from "../icons.ts";
-import type { Settings } from "../model.ts";
-import { SPRINGS, motionLevel, setMotionLevel, springEasing } from "../motion.ts";
-import { loadSettings, saveSettings } from "../settingsStore.ts";
-import { applyAppearance } from "../themes.ts";
+import { invoke } from "../core/bridge.ts";
+import { h } from "../core/dom.ts";
+import { ic } from "../core/icons.ts";
+import type { Settings } from "../core/model.ts";
+import { SPRINGS, motionLevel, setMotionLevel, springEasing } from "../core/motion.ts";
+import { loadSettings, saveSettings } from "../core/settingsStore.ts";
+import { applyAppearance } from "../core/themes.ts";
 import "../tools/registry.ts"; // registers the tool ids before settings are read
 import type { Page, PageId, StudioCtx } from "./ctx.ts";
 import { appearance } from "./pages/appearance.ts";

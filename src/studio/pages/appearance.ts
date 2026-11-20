@@ -1,10 +1,10 @@
-import { h } from "../../dom.ts";
-import { ic } from "../../icons.ts";
-import { ringSlots, type IconColor, type IconStyle, type IconWeight, type Motion } from "../../model.ts";
-import type { Slice } from "../../ring.ts";
-import { ACCENTS, PALETTES } from "../../themes.ts";
+import { h } from "../../core/dom.ts";
+import { ic } from "../../core/icons.ts";
+import { ringSlots, type IconColor, type IconStyle, type IconWeight, type Motion } from "../../core/model.ts";
+import type { Slice } from "../../overlay/ring.ts";
+import { ACCENTS, PALETTES, effectiveAccent, paletteOf } from "../../core/themes.ts";
 import { sliceOf } from "../../tools/registry.ts";
-import { group, row, seg } from "../../ui.ts";
+import { group, row, seg } from "../../core/ui.ts";
 import type { Page, StudioCtx } from "../ctx.ts";
 import { ringPreview } from "../preview.ts";
 
@@ -28,18 +28,20 @@ export function appearance(ctx: StudioCtx): Page {
             onClick: () => set({ theme: p.id }, true),
             style: `--c-bg:${p.id === "tinted" ? "#1b1d2c" : p.bg};--c-bg3:${p.id === "tinted" ? "#2a2e4a" : p.bg3};--c-fg:${p.fg};`,
           },
-          h("span", { class: "theme-sample" }, h("i", { style: "background:var(--c-fg);opacity:.9" }), h("i", { style: "background:var(--c-fg);opacity:.45" }), h("i", { style: `background:${s.accent}` })),
+          h("span", { class: "theme-sample" }, h("i", { style: "background:var(--c-fg);opacity:.9" }), h("i", { style: "background:var(--c-fg);opacity:.45" }), h("i", { style: `background:${s.accent || p.accent}` })),
           h("span", { class: "theme-name" }, p.name),
         ),
       ),
     );
 
-    const custom = h("input", { type: "color", class: "color", value: s.accent, "aria-label": "Custom accent colour" });
+    const current = effectiveAccent(s);
+    const custom = h("input", { type: "color", class: "color", value: current, "aria-label": "Custom accent colour" });
     custom.addEventListener("input", () => set({ accent: custom.value }));
     custom.addEventListener("change", () => render());
     const swatches = h(
       "div",
       { class: "swatches" },
+      h("button", { class: "swatch theme-default" + (s.accent === "" ? " on" : ""), style: `background:${paletteOf(s.theme).accent}`, title: "Theme default", "aria-label": "Theme default accent", onClick: () => set({ accent: "" }, true) }),
       ...ACCENTS.map((a) => h("button", { class: "swatch" + (a.toLowerCase() === s.accent.toLowerCase() ? " on" : ""), style: `background:${a}`, title: a, "aria-label": a, onClick: () => set({ accent: a }, true) })),
       custom,
     );

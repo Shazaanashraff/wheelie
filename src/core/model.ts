@@ -21,6 +21,7 @@ export type VoiceModel = "tiny.en" | "base.en" | "tiny";
 
 export interface Settings {
   theme: string;
+  /** Accent colour as #rrggbb, or "" to use the theme's own accent. */
   accent: string;
   iconColor: IconColor;
   iconStyle: IconStyle;
@@ -40,7 +41,7 @@ export const defaultSlots = (): SlotList => DEFAULT_TOOL_ORDER.map((id) => ({ ki
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: "dark",
-  accent: "#7c8cff",
+  accent: "",
   iconColor: "auto",
   iconStyle: "line",
   iconWeight: "regular",
@@ -94,7 +95,7 @@ export function migrate(raw: unknown, toolIds: readonly string[], themeIds: read
   const d = DEFAULT_SETTINGS;
   return {
     theme: themeIds.includes(r.theme) ? r.theme : d.theme,
-    accent: /^#[0-9a-f]{6}$/i.test(r.accent) ? r.accent : d.accent,
+    accent: typeof r.accent === "string" && /^#[0-9a-f]{6}$/i.test(r.accent) ? r.accent : d.accent,
     iconColor: oneOf(r.iconColor, ["auto", "accent", "colorful"], d.iconColor),
     iconStyle: oneOf(r.iconStyle, ["line", "duotone"], d.iconStyle),
     iconWeight: oneOf(r.iconWeight, ["thin", "regular", "bold"], d.iconWeight),

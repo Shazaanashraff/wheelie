@@ -1,7 +1,7 @@
-import { h, icon, uid } from "../../dom.ts";
-import { ic, LAUNCH_ICON_IDS, UI_ICONS } from "../../icons.ts";
-import { SLOT_COUNT, assignLaunch, assignTool, clearSlot, moveSlot, ringSlots, type Slot, type SlotList } from "../../model.ts";
-import type { Slice } from "../../ring.ts";
+import { h, icon, uid } from "../../core/dom.ts";
+import { ic, LAUNCH_ICON_IDS, UI_ICONS } from "../../core/icons.ts";
+import { SLOT_COUNT, assignLaunch, assignTool, clearSlot, moveSlot, ringSlots, type Slot, type SlotList } from "../../core/model.ts";
+import type { Slice } from "../../overlay/ring.ts";
 import { LIBRARY, sliceOf, toolById } from "../../tools/registry.ts";
 import type { Page, StudioCtx } from "../ctx.ts";
 import { ringPreview } from "../preview.ts";

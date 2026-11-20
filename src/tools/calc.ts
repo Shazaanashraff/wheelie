@@ -1,6 +1,6 @@
-import { h, icon } from "../dom.ts";
-import { ICONS } from "../icons.ts";
-import { store } from "../store.ts";
+import { h, icon } from "../core/dom.ts";
+import { ICONS } from "../core/icons.ts";
+import { store } from "../core/store.ts";
 import type { Tool } from "./types.ts";
 import { INITIAL, equals, keyFromEvent, preview, press, pretty, type CalcState } from "./calcstate.ts";
 
@@ -59,7 +59,7 @@ export const calc: Tool = {
 
     const keyButtons = new Map<string, HTMLButtonElement[]>();
     const makeKey = (def: Key) => {
-      const b = h("button", { class: `ckey ${def.kind}`, title: def.title ?? "", tabIndex: -1, onMousedown: noFocus, onClick: () => onKey(def.key) }, def.label);
+      const b = h("button", { class: `ckey ${def.kind}`, title: def.title ?? "", tabIndex: -1, onMousedown: noFocus, onPointerdown: (e: PointerEvent) => e.button === 0 && onKey(def.key) }, def.label);
       keyButtons.set(def.key, [...(keyButtons.get(def.key) ?? []), b]);
       return b;
     };
@@ -160,7 +160,7 @@ export const calc: Tool = {
       if (!histPanel.hidden) toggleHistory();
       for (const b of keyButtons.get(key) ?? []) {
         b.classList.add("pressed");
-        setTimeout(() => b.classList.remove("pressed"), 110);
+        setTimeout(() => b.classList.remove("pressed"), 70);
       }
       onKey(key);
     });

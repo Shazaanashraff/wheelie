@@ -3,19 +3,19 @@
  * It is built from the app's real modules (the ring engine, icon set, spring
  * physics, panel motion and stylesheets), so what you see is what ships.
  */
-import "../style.css";
-import "../iconMotion.css";
+import "../styles/base.css";
+import "../styles/icons.css";
 import "../studio/studio.css";
 import "./gallery.css";
-import { h } from "../dom.ts";
-import { ic, LAUNCH_ICONS, TOOL_ICONS } from "../icons.ts";
-import { DEFAULT_SETTINGS, type Settings } from "../model.ts";
-import { loop, setMotionLevel } from "../motion.ts";
-import { panelIn, panelOut } from "../panelmotion.ts";
-import type { Slice } from "../ring.ts";
+import { h } from "../core/dom.ts";
+import { ic, LAUNCH_ICONS, TOOL_ICONS } from "../core/icons.ts";
+import { DEFAULT_SETTINGS, type Settings } from "../core/model.ts";
+import { loop, setMotionLevel } from "../core/motion.ts";
+import { panelIn, panelOut } from "../overlay/panelmotion.ts";
+import type { Slice } from "../overlay/ring.ts";
 import { ringPreview } from "../studio/preview.ts";
-import { ACCENTS, PALETTES, applyAppearance } from "../themes.ts";
-import { seg, toggle } from "../ui.ts";
+import { ACCENTS, PALETTES, applyAppearance } from "../core/themes.ts";
+import { seg, toggle } from "../core/ui.ts";
 
 (window as any).__motion = { loop };
 

@@ -1,8 +1,8 @@
-import { h } from "../../dom.ts";
-import { ic } from "../../icons.ts";
-import { SLOT_COUNT, assignTool, clearSlot, ringSlots } from "../../model.ts";
+import { h } from "../../core/dom.ts";
+import { ic } from "../../core/icons.ts";
+import { SLOT_COUNT, assignTool, clearSlot, ringSlots } from "../../core/model.ts";
 import { LIBRARY, toolById } from "../../tools/registry.ts";
-import { select } from "../../ui.ts";
+import { select } from "../../core/ui.ts";
 import type { Page, StudioCtx } from "../ctx.ts";
 
 export function library(ctx: StudioCtx): Page {

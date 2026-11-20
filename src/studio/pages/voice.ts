@@ -1,7 +1,7 @@
-import { h } from "../../dom.ts";
-import { ic } from "../../icons.ts";
-import type { VoiceModel } from "../../model.ts";
-import { group, row } from "../../ui.ts";
+import { h } from "../../core/dom.ts";
+import { ic } from "../../core/icons.ts";
+import type { VoiceModel } from "../../core/model.ts";
+import { group, row } from "../../core/ui.ts";
 import { voice } from "../../voice/engine.ts";
 import { VOICE_MODELS, isModelReady } from "../../voice/models.ts";
 import { micErrorMessage, startRecording, type Recording } from "../../voice/recorder.ts";

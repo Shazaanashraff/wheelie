@@ -2,8 +2,8 @@
  * A live ring inside the app window, built with the very same engine as the overlay, so
  * hovering feels identical and what you customise is what you get.
  */
-import { h } from "../dom.ts";
-import { hitTest, renderRing, type RingView, type Slice } from "../ring.ts";
+import { h } from "../core/dom.ts";
+import { hitTest, renderRing, type RingView, type Slice } from "../overlay/ring.ts";
 
 const STAGE = 480; // the ring is drawn on a fixed 480px stage, then scaled to fit
 
