@@ -94,3 +94,9 @@ test("the default accent is empty, meaning 'use the theme's own'", () => {
   assert.equal(DEFAULT_SETTINGS.accent, "");
   assert.equal(migrate({ accent: "" }, TOOLS, THEMES).accent, "");
 });
+
+test("Wheelie starts in the dark theme, and an unknown or missing theme falls back to it", () => {
+  assert.equal(DEFAULT_SETTINGS.theme, "dark");
+  assert.equal(migrate({}, TOOLS, THEMES).theme, "dark");
+  assert.equal(migrate({ theme: "nope" }, TOOLS, THEMES).theme, "dark");
+});
