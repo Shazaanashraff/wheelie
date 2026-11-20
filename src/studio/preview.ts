@@ -47,7 +47,8 @@ export function ringPreview(opts: PreviewOptions): Preview {
 
   const rel = (e: PointerEvent) => {
     const r = el.getBoundingClientRect();
-    return { dx: (e.clientX - r.left) / scale - c, dy: (e.clientY - r.top) / scale - c };
+    const k = r.width / STAGE; // the scale it is really drawn at, even inside a transformed container
+    return { dx: (e.clientX - r.left) / k - c, dy: (e.clientY - r.top) / k - c };
   };
   el.addEventListener("pointermove", (e) => {
     const { dx, dy } = rel(e);

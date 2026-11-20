@@ -43,6 +43,7 @@ const card = (...kids: Node[]) => h("div", { class: "gal-card" }, ...kids);
 // ============ 1. the wheel =================================================
 function wheel(): HTMLElement {
   const stage = h("div", { class: "gal-stage" });
+  const stageWrap = h("div", { class: "gal-stage-wrap" }, stage);
   let host: HTMLElement | null = null;
   let busy = false;
   const preview = ringPreview({ size: 480, getSlices: () => SLICES, onSelect: (i) => void choose(i) });
@@ -93,6 +94,14 @@ function wheel(): HTMLElement {
     reset();
   };
 
+  // On a narrow screen the 480px stage shrinks to fit (everything inside scales with it).
+  const fit = () => {
+    const room = (stageWrap.parentElement?.parentElement?.clientWidth ?? 520) - 44;
+    stageWrap.style.setProperty("--k", String(Math.max(0.5, Math.min(1, room / 480))));
+  };
+  new ResizeObserver(fit).observe(document.body);
+  requestAnimationFrame(fit);
+
   return section(
     "1 · The wheel",
     "Move your mouse over the ring. Click a slice to choose it, and the panel grows out of that slice.",
@@ -100,7 +109,7 @@ function wheel(): HTMLElement {
       h(
         "div",
         { class: "gal-row" },
-        stage,
+        stageWrap,
         h(
           "div",
           { class: "gal-side" },
@@ -144,7 +153,7 @@ function panels(): HTMLElement {
   const body = h("div", { class: "panel-body enter" });
   const list = h("div", { class: "gal-list stg" }, ...["Project ideas", "Groceries", "Meeting with Priya", "Book recommendations", "Trip ideas", "Weekend plan"].map((t) => h("div", { class: "gal-li" }, h("i"), h("span", {}, t))));
   body.append(list);
-  const panel = h("div", { class: "gal-panel", style: "position:relative;width:340px;height:400px;flex:none" }, h("div", { class: "panel-head" }, h("span", { class: "panel-icon" }, ic("notes", 18)), h("span", { class: "panel-title" }, "Notes"), ic("close", 16)), body);
+  const panel = h("div", { class: "gal-panel", style: "position:relative;width:min(340px,100%);height:400px;flex:none" }, h("div", { class: "panel-head" }, h("span", { class: "panel-icon" }, ic("notes", 18)), h("span", { class: "panel-title" }, "Notes"), ic("close", 16)), body);
   const cascade = () => {
     body.classList.remove("enter");
     void body.offsetWidth;
@@ -274,6 +283,7 @@ document.getElementById("app")!.append(
     "div",
     { class: "gal" },
     h("header", { class: "gal-head" }, h("h1", {}, "Wheelie motion gallery"), h("p", {}, "Every animation in Wheelie, live. It is built from the app's own code, so what you see here is what runs. Use the bar to change the theme or turn motion down to Subtle or Off.")),
+    ...(matchMedia("(prefers-reduced-motion: reduce)").matches ? [h("p", { class: "gal-note" }, "Your device asks for reduced motion, so animations are switched off on this page.")] : []),
     bar,
     wheel(),
     icons(),
