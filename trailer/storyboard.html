@@ -1,0 +1,500 @@
+<title>Wheelie Trailer Storyboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap">
+<style>
+/* Layout: a storyboard sheet. Timeline strip to scale, then acts of 16:9 panels with shot notes; production + questions at the end. */
+:root{
+  --paper:#eceff3; --card:#ffffff; --ink:#20242b; --muted:#5c6674; --line:#d3d9e0;
+  --screen:#f6f8fa; --screenhot:#fbe9e2; --night:#161a20; --tb:#dfe4ea; --icon:#aab4c0;
+  --blue:#3b97d3; --teal:#0b9682; --tealsoft:#c8eee7; --hot:#df4b26; --hotsoft:#f7c9b9; --foam:#ffffff;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --f-hand:"Kalam", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#12151a; --card:#1b1f26; --ink:#dde2e9; --muted:#97a2b0; --line:#2c323b;
+  --screen:#20252d; --screenhot:#3a2420; --night:#0b0d10; --tb:#2b313a; --icon:#566170;
+  --blue:#64b5e8; --teal:#2fcfb3; --tealsoft:#17453e; --hot:#ff7148; --hotsoft:#5a2c20; --foam:#e9eef3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#12151a; --card:#1b1f26; --ink:#dde2e9; --muted:#97a2b0; --line:#2c323b;
+  --screen:#20252d; --screenhot:#3a2420; --night:#0b0d10; --tb:#2b313a; --icon:#566170;
+  --blue:#64b5e8; --teal:#2fcfb3; --tealsoft:#17453e; --hot:#ff7148; --hotsoft:#5a2c20; --foam:#e9eef3; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body)}
+.wrap{max-width:1240px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.6rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+header.top{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:28px}
+header.top .lede{max-width:62ch;color:var(--muted);margin-top:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px}
+.meta span{font:500 13px var(--f-mono);color:var(--ink)}
+.meta b{color:var(--muted);font-weight:400}
+button.play{font:600 15px var(--f-body);background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:12px 20px;display:inline-flex;gap:10px;align-items:center;cursor:pointer}
+button.play:focus-visible,.tl a:focus-visible,.ov button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button.play svg{width:14px;height:14px;fill:currentColor}
+
+/* timeline */
+.tl{margin:8px 0 48px}
+.tl .acts,.tl .shots{display:flex;gap:2px}
+.tl .acts div{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:0 0 6px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .shots a{display:block;height:34px;border-radius:3px;color:var(--card);font:500 11px/34px var(--f-mono);text-align:center;text-decoration:none;overflow:hidden}
+.tl .ticks{position:relative;height:18px;margin-top:4px}
+.tl .ticks span{position:absolute;font:11px var(--f-mono);color:var(--muted);transform:translateX(-50%)}
+.tl .ticks span:first-child{transform:none}.tl .ticks span:last-child{transform:translateX(-100%)}
+.a1{background:var(--hot)}.a2{background:var(--blue)}.a3{background:var(--teal)}.a4{background:var(--ink)}
+
+/* acts */
+section.act{margin-top:56px}
+.act-head{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:baseline;border-top:2px solid var(--ink);padding-top:14px;margin-bottom:22px}
+.act-head .eyebrow{grid-column:1/-1}
+.act-head p{color:var(--muted);max-width:70ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel .ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.panel .ph h3{font-size:1rem}
+.panel .ph .mono{font-size:12px;color:var(--muted);white-space:nowrap}
+.shotno{font:500 12px var(--f-mono);color:var(--muted);margin-right:6px}
+.frame{border:1.5px solid var(--ink);border-radius:2px;line-height:0;overflow:hidden}
+.frame svg{width:100%;height:auto;display:block}
+dl.notes{margin:0;display:grid;grid-template-columns:78px 1fr;gap:5px 10px;font-size:13.5px}
+dl.notes dt{font:500 11px/1.9 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+dl.notes dd{margin:0;min-width:0}
+
+/* sheets */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px}
+.sheet{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.sheet p,.sheet li{color:var(--ink)}
+.sheet .muted{color:var(--muted)}
+.rule{border-left:4px solid var(--teal);padding:14px 18px;background:var(--card);border-radius:0 6px 6px 0;margin-top:22px;max-width:80ch}
+ol.steps,ul.plain,ol.qs{margin:0;padding-left:1.2em;display:grid;gap:8px}
+ol.qs li::marker{font-family:var(--f-mono);color:var(--muted)}
+.chapters{display:grid;gap:0}
+.chapters div{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:10px 0;border-top:1px solid var(--line)}
+.chapters div:first-child{border-top:0}
+.chapters .mono{font-size:13px;color:var(--muted)}
+
+/* svg sketch classes */
+.scr{fill:var(--screen)}.scr-hot{fill:var(--screenhot)}.scr-dark{fill:var(--night)}
+.tb{fill:var(--tb)}.ico{fill:var(--icon)}.ico-hot{fill:var(--hot)}.ico-teal{fill:var(--teal)}
+.ln{fill:none;stroke:var(--ink);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.lnf{fill:var(--ink)}
+.wbox{fill:var(--card);stroke:var(--ink);stroke-width:.9}
+.wbox-ghost{fill:var(--card);stroke:var(--muted);stroke-width:.7;stroke-dasharray:2 1.5}
+.wbar{stroke:var(--ink);stroke-width:.7}
+.wt{font:600 5px var(--f-body);fill:var(--ink)}
+.sk{font-family:var(--f-hand);fill:var(--ink)}
+.skm{font-family:var(--f-hand);fill:var(--muted)}
+.ui{font-family:var(--f-body);fill:var(--ink)}
+.mn{font-family:var(--f-mono);fill:var(--ink)}
+.mv{fill:none;stroke:var(--blue);stroke-width:1.1;stroke-dasharray:3 2;stroke-linecap:round}
+.cam{fill:none;stroke:var(--blue);stroke-width:.9;stroke-dasharray:5 3}
+.camt{font:500 5.5px var(--f-mono);fill:var(--blue)}
+.hot{fill:var(--hot)}.hotsoft{fill:var(--hotsoft)}.hotln{fill:none;stroke:var(--hot);stroke-width:1.1;stroke-linecap:round}
+.teal{fill:var(--teal)}.tealsoft{fill:var(--tealsoft)}.tealln{fill:none;stroke:var(--teal);stroke-width:1.2;stroke-linecap:round}
+.card{fill:var(--card)}.ink{fill:var(--ink)}.muted{fill:var(--muted)}.foam{fill:var(--foam);stroke:var(--muted);stroke-width:.5}
+.tire{fill:none;stroke:var(--teal)}.tread{stroke:var(--card);stroke-width:1.1;stroke-linecap:round}
+.face{fill:var(--card);stroke:var(--ink);stroke-width:.8}
+.seg{fill:var(--card);stroke:var(--ink);stroke-width:.8}.seg-on{fill:var(--tealsoft);stroke:var(--teal);stroke-width:1.2}.seg-ghost{fill:none;stroke:var(--muted);stroke-width:.7;stroke-dasharray:2 1.5}
+.night-t{fill:#f2f4f7}
+
+/* animatic overlay */
+.ov{position:fixed;inset:0;background:#0b0d10;color:#eef1f5;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.ov[hidden]{display:none}
+.ov .stage{width:min(1100px,100%,calc((100vh - 230px) * 16 / 9));line-height:0;border-radius:4px;overflow:hidden;background:#fff;transition:opacity .18s}
+.ov .stage svg{width:100%;height:auto}
+.ov .cap{width:min(1100px,100%);display:grid;grid-template-columns:auto 1fr;gap:4px 16px;align-items:baseline}
+.ov .cap .tc{font:500 22px var(--f-mono);font-variant-numeric:tabular-nums}
+.ov .cap h3{font-size:1.2rem}
+.ov .cap p{grid-column:2;color:#aab4c0;font-size:14px;max-width:80ch}
+.ov .bar{width:min(1100px,100%);height:6px;background:#2a2f37;border-radius:3px;position:relative;overflow:hidden}
+.ov .bar i{position:absolute;inset:0 auto 0 0;background:#2fcfb3;width:0}
+.ov .ctl{display:flex;gap:8px}
+.ov button{font:500 14px var(--f-body);background:#252a32;color:#eef1f5;border:1px solid #3a414c;border-radius:999px;padding:8px 16px;cursor:pointer}
+@media (max-width:640px){header.top{grid-template-columns:1fr}.tl .shots a{font-size:0}.chapters div{grid-template-columns:1fr;gap:2px}}
+@media (prefers-reduced-motion:reduce){.ov .stage{transition:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--blue)"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Launch trailer · storyboard v1 · for approval</p>
+      <h1>Wheelie: from fifteen apps to one wheel</h1>
+      <p class="lede">A 60-second, fully animated trailer. A desktop drowns in single-purpose apps until it overheats. Wheelie rolls in, puts out the fire, swallows every app, and becomes the wheel. Then we show what it does and how to get it. No title cards: every word appears inside the scene.</p>
+      <div class="meta">
+        <span><b>Length</b> 1:00</span><span><b>Shots</b> 18</span><span><b>Format</b> 16:9 · 1920×1080 · 60 fps</span><span><b>Audio</b> music + SFX, no VO</span>
+      </div>
+    </div>
+    <button class="play" id="playBtn" type="button"><svg viewBox="0 0 10 10"><path d="M1 0 L10 5 L1 10z"/></svg>Play animatic</button>
+  </header>
+
+  <div class="tl" id="timeline" aria-label="Timeline, drawn to scale"></div>
+
+  <div id="acts"></div>
+
+  <div class="rule">
+    <h3>The one rule: no slides</h3>
+    <p style="margin-top:6px">Every word is a thing in the world: a notification, a chat bubble, a scanner tag, a memory graph label, a keycap, a tire track. No text-left / picture-right layouts, no static title cards, and the camera never holds still for more than about a second and a half.</p>
+  </div>
+
+  <section class="act">
+    <div class="act-head"><p class="eyebrow">Design sheets</p><h2>Character and wheel</h2><p>Placeholder look until you send real brand assets.</p></div>
+    <div class="two">
+      <div class="sheet">
+        <h3>Wheelie, the character</h3>
+        <div class="frame" id="charSheet"></div>
+        <p class="muted">A tire-bodied mascot with its face in the hub. It rolls everywhere instead of walking, and the tire spins faster when it is working. Four poses needed: neutral, alarmed, hero (extinguisher), nerd (glasses). The same face sits in the hub of the wheel UI, so character and product read as one thing.</p>
+      </div>
+      <div class="sheet">
+        <h3>The wheel, eight slots</h3>
+        <div class="frame" id="wheelSheet"></div>
+        <p class="muted">Opens around the cursor on Alt + Space. Each slot is one tool; picking one slides it out into the full tool. A slot can also launch an installed app. A ninth "+" slot appears only in shot 15, for custom tools.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="act">
+    <div class="act-head"><p class="eyebrow">How it gets made</p><h2>Production plan</h2><p>Built in code so every frame is editable and the UI stays crisp.</p></div>
+    <div class="two">
+      <div class="sheet">
+        <h3>Approach</h3>
+        <ul class="plain">
+          <li><b>Remotion</b> (React-based video) renders every shot from code. Real UI, real text, exact timing. A change is an edit and a re-render, not a re-animation.</li>
+          <li><b>Character</b> is a vector rig animated in code, so Wheelie looks identical in all 18 shots.</li>
+          <li><b>AI generation</b> for character concept options and the music bed / SFX. Google Flow isn't connected to this session; Higgsfield and Canva are, so I'd use Higgsfield. I'd keep AI video out of the UI shots, because it warps text and window chrome.</li>
+          <li><b>Output</b> 1920×1080 MP4 at 60 fps. A 4K master and a 9:16 vertical cut for socials are optional extras.</li>
+        </ul>
+      </div>
+      <div class="sheet">
+        <h3>Steps after approval</h3>
+        <ol class="steps">
+          <li>Lock the character, palette and the eight tools.</li>
+          <li>Animatic with real timing and temp music. You review pacing.</li>
+          <li>Full animation, act by act. You review each act.</li>
+          <li>Sound pass: music, SFX hits on every beat called out above.</li>
+          <li>Final render and hand-off, plus the trailer cut that opens the long video.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="act">
+    <div class="act-head"><p class="eyebrow">After the trailer</p><h2>The long video, about six minutes</h2><p>This trailer opens it. Then it's you on camera, with screen recordings and short animated inserts reused from the trailer.</p></div>
+    <div class="sheet chapters">
+      <div><span class="mono">0:00–1:00</span><p><b>Trailer.</b> This storyboard.</p></div>
+      <div><span class="mono">1:00–2:00</span><p><b>Why Wheelie exists.</b> Your own fifteen-app desktop and the moment it broke. Callback: the meltdown shot.</p></div>
+      <div><span class="mono">2:00–3:15</span><p><b>How it was designed.</b> Why a wheel, why Alt + Space, offline-first, local data, keeping memory low.</p></div>
+      <div><span class="mono">3:15–4:15</span><p><b>Building and shipping.</b> The stack, the hard parts, getting it to production.</p></div>
+      <div><span class="mono">4:15–5:30</span><p><b>Open source.</b> Repo tour, writing your own tool live, how to contribute.</p></div>
+      <div><span class="mono">5:30–6:00</span><p><b>What's next.</b> Mac and Linux, more tools, mobile. Download link.</p></div>
+    </div>
+  </section>
+
+  <section class="act">
+    <div class="act-head"><p class="eyebrow">Before I start</p><h2>Open questions</h2><p>Answers to these change the drawings. Anything you skip, I'll keep the assumption shown.</p></div>
+    <div class="sheet">
+      <ol class="qs">
+        <li><b>Brand assets.</b> Do you have a Wheelie logo, character design, colors, or screenshots of the real app? The repo is empty, so the teal and the character here are placeholders.</li>
+        <li><b>The eight tools.</b> I assumed Calculator, Notes, Alarm, Reminders, Timer, Converter, Clipboard, To-do. What are the real ones?</li>
+        <li><b>"Helix".</b> Drawn as a flat radial wheel. Did you mean a 3D spiral of tools instead?</li>
+        <li><b>Memory number.</b> Wheelie's real idle RAM from Task Manager, for shot 13.</li>
+        <li><b>Voice.</b> Music and SFX only (as drawn), or a voiceover?</li>
+        <li><b>End card.</b> The download URL or site to show.</li>
+        <li><b>Desktop look.</b> A generic Windows-style desktop (recommended; it avoids copying Microsoft's UI) or a faithful Windows 11 look?</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<div class="ov" id="ov" hidden role="dialog" aria-label="Animatic player">
+  <div class="stage" id="ovStage"></div>
+  <div class="bar"><i id="ovBar"></i></div>
+  <div class="cap"><span class="tc" id="ovTc">0:00</span><h3 id="ovTitle"></h3><p id="ovText"></p></div>
+  <div class="ctl">
+    <button type="button" id="ovPrev">Previous</button>
+    <button type="button" id="ovPause">Pause</button>
+    <button type="button" id="ovNext">Next</button>
+    <button type="button" id="ovClose">Close</button>
+  </div>
+</div>
+
+<script>
+/* ---------- sketch primitives (viewBox 320x180) ---------- */
+const f=n=>(+n).toFixed(1);
+const desk=(hot)=>`<rect class="${hot?'scr-hot':'scr'}" x="0" y="0" width="320" height="180"/>`;
+function taskbar(n,o={}){
+  const size=o.size||9,gap=o.gap??3,total=n*size+(n-1)*gap,x0=150-total/2;
+  let s=`<rect class="tb" x="0" y="164" width="320" height="16"/>`;
+  for(let i=0;i<n;i++){
+    const c=(o.teal===i)?'ico-teal':(o.hot&&o.hot.includes(i))?'ico-hot':'ico';
+    s+=`<rect class="${c}" x="${f(x0+i*(size+gap))}" y="${f(172-size/2)}" width="${size}" height="${size}" rx="2"/>`;
+  }
+  if(o.ram){const w=22,p=o.ram/100,col=o.ram>80?'hot':'teal';
+    s+=`<rect x="262" y="169" width="${w}" height="6" rx="1" class="card" style="stroke:var(--ink);stroke-width:.5"/><rect x="262" y="169" width="${f(w*p)}" height="6" rx="1" class="${col}"/><text x="288" y="174.6" class="mn" style="font-size:5px">${o.ram}%</text>`;}
+  s+=`<text x="304" y="174.5" class="mn" style="font-size:4.5px">${o.time||'9:02'}</text>`;
+  return s;
+}
+function win(x,y,w,h,title,body='',o={}){
+  const rot=o.rot?` transform="rotate(${o.rot} ${x+w/2} ${y+h/2})"`:'';
+  return `<g${rot}><rect class="${o.ghost?'wbox-ghost':'wbox'}" x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/><line class="wbar" x1="${x}" y1="${y+8}" x2="${x+w}" y2="${y+8}"/><text class="wt" x="${x+3}" y="${y+5.8}">${title}</text><text class="wt" x="${x+w-10}" y="${y+5.8}">– ×</text>${body}</g>`;
+}
+function calcBody(x,y,w,h,disp='1,284.50'){
+  let s=`<rect x="${x+4}" y="${y+11}" width="${w-8}" height="${f(h*.18)}" rx="1" class="tb"/><text x="${x+w-6}" y="${f(y+11+h*.14)}" text-anchor="end" class="mn" style="font-size:${f(Math.max(5,h*.11))}px">${disp}</text>`;
+  const top=y+14+h*.18,cw=(w-8)/4,ch=(h-(top-y)-4)/4;
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++)s+=`<rect x="${f(x+4+c*cw+.8)}" y="${f(top+r*ch+.8)}" width="${f(cw-1.6)}" height="${f(ch-1.6)}" rx="1" class="${c===3?'tealsoft':'tb'}"/>`;
+  return s;
+}
+function lines(x,y,w,n,gap=6,first=''){
+  let s=first?`<text x="${x}" y="${y+4}" class="sk" style="font-size:6.5px">${first}</text>`:'';
+  for(let i=first?1:0;i<n;i++)s+=`<line class="ln" style="stroke-width:.7;stroke:var(--muted)" x1="${x}" y1="${y+i*gap+2}" x2="${f(x+w*(.55+.4*((i*37)%10)/10))}" y2="${y+i*gap+2}"/>`;
+  return s;
+}
+function clockFace(cx,cy,r,label){
+  return `<circle class="face" cx="${cx}" cy="${cy}" r="${r}"/><line class="ln" x1="${cx}" y1="${cy}" x2="${cx}" y2="${f(cy-r*.7)}"/><line class="ln" x1="${cx}" y1="${cy}" x2="${f(cx+r*.5)}" y2="${f(cy+r*.2)}"/>${label?`<text x="${cx}" y="${f(cy+r+8)}" text-anchor="middle" class="mn" style="font-size:7px">${label}</text>`:''}`;
+}
+function checks(x,y,items){
+  return items.map((t,i)=>`<rect x="${x}" y="${y+i*8}" width="4" height="4" rx=".8" class="card" style="stroke:var(--ink);stroke-width:.6"/><text x="${x+7}" y="${y+i*8+3.8}" class="ui" style="font-size:4.6px">${t}</text>`).join('');
+}
+const cursor=(x,y,s=1)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0 0 L0 11 L2.8 8.4 L4.9 13 L6.6 12.2 L4.5 7.7 L8.2 7.7 Z" style="fill:var(--card);stroke:var(--ink);stroke-width:.8;stroke-linejoin:round"/>`;
+const arrow=(d)=>`<path class="mv" d="${d}" marker-end="url(#ah)"/>`;
+const cam=(x,y,w,h,t)=>`<rect class="cam" x="${x}" y="${y}" width="${w}" height="${h}"/>${t?`<text class="camt" x="${x+2}" y="${y-2}">${t}</text>`:''}`;
+const note=(x,y,t,sz=7,anchor='start',cls='sk')=>`<text x="${x}" y="${y}" class="${cls}" style="font-size:${sz}px" text-anchor="${anchor}">${t}</text>`;
+function toast(x,y,w,h,t,o={}){
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.bubble?6:2}" class="card" style="stroke:var(--${o.color||'ink'});stroke-width:${o.color?1.2:.8}"/>${o.bubble?`<path d="M${x+10} ${y+h} l-4 6 l10 -6" class="card" style="stroke:var(--${o.color||'ink'});stroke-width:1"/>`:''}<rect x="${x+3}" y="${y+3}" width="${h-6}" height="${h-6}" rx="1.5" class="${o.icon||'ico'}"/><text x="${x+h}" y="${y+h/2+2}" class="ui" style="font-size:${o.sz||5.4}px;font-weight:600">${t}</text>`;
+}
+function flames(x0,x1,y,hgt=12){
+  let d=`M${x0} ${y}`;for(let x=x0;x<x1;x+=8){d+=` Q${x+2} ${y-hgt*(.6+((x*7)%5)/8)} ${x+4} ${y-hgt*.3} Q${x+6} ${y-hgt*(.8+((x*3)%4)/7)} ${x+8} ${y}`;}
+  return `<path d="${d} Z" class="hot" style="opacity:.85"/><path d="${d.replace(/-/g,'-').replace(/Q/g,'Q')}" class="hotsoft" transform="translate(0 2) scale(1 .96)" style="opacity:.0"/>`;
+}
+const heat=(x,y,n=3)=>Array.from({length:n},(_,i)=>`<path class="hotln" style="opacity:.6" d="M${x+i*9} ${y} q3 -4 0 -8 q-3 -4 0 -8"/>`).join('');
+function wheelie(cx,cy,r,o={}){
+  let s='';
+  const arm=(side,dx,dy)=>`<path class="ln" style="stroke-width:${f(Math.max(1,r*.09))}" d="M${f(cx+side*r*.92)} ${f(cy+r*.12)} q${f(side*r*.25)} ${f(r*.05)} ${f(side*dx)} ${f(dy)}"/>`;
+  s+=o.armL===false?'':arm(-1,o.armL?.[0]??r*.38,o.armL?.[1]??r*.32);
+  s+=o.armR===false?'':arm(1,o.armR?.[0]??r*.38,o.armR?.[1]??r*.32);
+  s+=`<circle class="tire" cx="${cx}" cy="${cy}" r="${f(r*.86)}" style="stroke-width:${f(r*.28)}"/>`;
+  for(let i=0;i<14;i++){const a=i/14*Math.PI*2+(o.spin||0);s+=`<line class="tread" x1="${f(cx+Math.cos(a)*r*.77)}" y1="${f(cy+Math.sin(a)*r*.77)}" x2="${f(cx+Math.cos(a)*r*.95)}" y2="${f(cy+Math.sin(a)*r*.95)}"/>`;}
+  s+=`<circle class="face" cx="${cx}" cy="${cy}" r="${f(r*.68)}"/>`;
+  const ex=r*.22,ey=cy-r*.1;
+  if(o.mood==='wide'){s+=[-1,1].map(k=>`<circle cx="${f(cx+k*ex)}" cy="${f(ey)}" r="${f(r*.13)}" class="card" style="stroke:var(--ink);stroke-width:.7"/><circle cx="${f(cx+k*ex)}" cy="${f(ey)}" r="${f(r*.05)}" class="ink"/>`).join('');
+    s+=`<ellipse cx="${cx}" cy="${f(cy+r*.28)}" rx="${f(r*.08)}" ry="${f(r*.1)}" class="ink"/>`;}
+  else if(o.mood==='wink'){s+=`<ellipse cx="${f(cx-ex)}" cy="${f(ey)}" rx="${f(r*.07)}" ry="${f(r*.12)}" class="ink"/><path class="ln" d="M${f(cx+ex-r*.1)} ${f(ey)} q${f(r*.1)} ${f(-r*.08)} ${f(r*.2)} 0"/>`;
+    s+=`<path class="ln" d="M${f(cx-r*.22)} ${f(cy+r*.18)} q${f(r*.22)} ${f(r*.2)} ${f(r*.44)} 0"/>`;}
+  else{s+=[-1,1].map(k=>`<ellipse cx="${f(cx+k*ex)}" cy="${f(ey)}" rx="${f(r*.07)}" ry="${f(r*.12)}" class="ink"/>`).join('');
+    s+= o.mood==='determined'?`<path class="ln" d="M${f(cx-ex-r*.1)} ${f(ey-r*.2)} l${f(r*.18)} ${f(r*.06)} M${f(cx+ex+r*.1)} ${f(ey-r*.2)} l${f(-r*.18)} ${f(r*.06)}"/><path class="ln" d="M${f(cx-r*.15)} ${f(cy+r*.22)} h${f(r*.3)}"/>`
+      :`<path class="ln" d="M${f(cx-r*.2)} ${f(cy+r*.16)} q${f(r*.2)} ${f(r*.18)} ${f(r*.4)} 0"/>`;}
+  if(o.glasses)s+=[-1,1].map(k=>`<rect x="${f(cx+k*ex-r*.14)}" y="${f(ey-r*.12)}" width="${f(r*.28)}" height="${f(r*.24)}" rx="${f(r*.05)}" style="fill:none;stroke:var(--ink);stroke-width:${f(r*.05)}"/>`).join('')+`<line class="ln" x1="${f(cx-ex+r*.14)}" y1="${f(ey)}" x2="${f(cx+ex-r*.14)}" y2="${f(ey)}"/>`;
+  return s;
+}
+function sector(cx,cy,r0,r1,a0,a1){
+  const p=(r,a)=>`${f(cx+r*Math.cos(a))} ${f(cy+r*Math.sin(a))}`;
+  return `M${p(r1,a0)} A${r1} ${r1} 0 0 1 ${p(r1,a1)} L${p(r0,a1)} A${r0} ${r0} 0 0 0 ${p(r0,a0)} Z`;
+}
+const TOOLS=['Calc','Notes','Alarm','Remind','Timer','Convert','Clip','To-do'];
+function wheelUI(cx,cy,r,o={}){
+  const labels=o.labels||TOOLS,n=labels.length,r0=r*.42,gap=.035;let s='';
+  labels.forEach((t,i)=>{
+    const a0=-Math.PI/2-Math.PI/n+i*2*Math.PI/n+gap,a1=a0+2*Math.PI/n-2*gap,am=(a0+a1)/2,rm=(r0+r)/2;
+    const cls=(o.ghost&&o.ghost.includes(i))?'seg-ghost':(o.on===i||(o.onAll))?'seg-on':'seg';
+    s+=`<path class="${cls}" d="${sector(cx,cy,r0,r,a0,a1)}"/>`;
+    if(o.showLabels!==false)s+=`<text x="${f(cx+rm*Math.cos(am))}" y="${f(cy+rm*Math.sin(am)+r*.05)}" text-anchor="middle" class="${cls==='seg-ghost'?'skm':'ui'}" style="font-size:${f(r*.13)}px;font-weight:600">${t}</text>`;
+  });
+  s+=wheelie(cx,cy,r0*.95,{armL:false,armR:false,mood:o.mood});
+  return s;
+}
+function svg(inner,label){return `<svg viewBox="0 0 320 180" role="img" aria-label="${label}">${inner}</svg>`}
+
+/* ---------- the 18 shots ---------- */
+const ACTS=[
+ {id:1,name:'Overload',range:'0:00–0:15',intent:'Ordinary tasks pile up, one app at a time, until the desktop overheats. Fast, rhythmic, funny. Every new window lands on a music beat.'},
+ {id:2,name:'The rescue',range:'0:15–0:27',intent:'Silence, one calm icon, one click. Wheelie rolls in, puts out the fire, IDs every app and fuses them into itself.'},
+ {id:3,name:'Meet Wheelie',range:'0:27–0:50',intent:'What it is and why it matters, shown not told: one wheel, every tool, offline, tiny memory, launches apps, and you can build your own tools.'},
+ {id:4,name:'Get it',range:'0:50–1:00',intent:'The hotkey, the promise of more, and the download. Then hand off to the long video.'}
+];
+const SHOTS=[
+ {act:1,dur:3,title:'Deadline',
+  action:'A normal desktop. A notification slides in: "Invoice totals due 10:00". The cursor opens Calculator and starts punching numbers.',
+  camera:'Wide on the screen, slow push-in.',sound:'Beat starts. Mouse click, keypad clacks.',text:'The notification.',
+  draw:()=>desk()+cam(60,28,200,124,'PUSH IN')+win(105,40,96,108,'Calculator',calcBody(105,40,96,108))+toast(206,10,106,20,'Invoice totals due 10:00',{icon:'ico-hot'})+arrow('M256 32 Q240 46 206 56')+cursor(175,112)+taskbar(3,{teal:-1})},
+ {act:1,dur:2,title:'The meeting',
+  action:'A chat bubble pops over the calculator: "did you make it to the meeting??" The cursor jolts to the clock app and sets an alarm for 10:30.',
+  camera:'Snap-zoom onto the bubble, then straight back out.',sound:'Message ping, record scratch on the beat.',text:'Chat bubble, alarm time.',
+  draw:()=>desk()+win(22,44,84,96,'Calculator',calcBody(22,44,84,96))+toast(150,12,150,24,'did you make it to the meeting??',{bubble:1,color:'blue',icon:'ico',sz:5.8})+win(122,62,92,82,'Alarm',clockFace(168,96,20,'10:30'))+arrow('M200 44 Q196 54 186 62')+cursor(186,128)+note(232,70,'ping!',9)+taskbar(4)},
+ {act:1,dur:3,title:'Pile-up',
+  action:'Notes opens ("meeting: ask about Q3"), then Reminders, then a Timer. Each window snaps open on a beat and lands on top of the last.',
+  camera:'Locked off. A small shake on every window snap.',sound:'One "pop" per window, in rhythm.',text:'What gets typed in the notes.',
+  draw:()=>desk()+win(14,24,74,84,'Calculator',calcBody(14,24,74,84))+win(64,46,80,72,'Alarm',clockFace(104,80,16,'10:30'))+win(136,18,120,80,'Notes',lines(142,32,108,7,8,'meeting: ask about Q3…'))+win(40,98,94,58,'Reminders',checks(46,112,['Send invoice','Call bank','Buy milk','Gym 6pm']))+win(228,84,74,58,'Timer',`<text x="265" y="120" text-anchor="middle" class="mn" style="font-size:13px">05:00</text>`)+note(270,16,'pop!',8)+note(148,112,'pop!',8)+note(12,166,'',6)+taskbar(7)},
+ {act:1,dur:3,title:'Fifteen apps',
+  action:'Whip-montage of more windows: Converter, Clipboard, Color picker, Calendar, To-do, Weather, Stopwatch, Password generator. The taskbar fills to 15 icons that shrink and squeeze to fit.',
+  camera:'Pull back to reveal the full mess. Speed ramps.',sound:'Pops speed up into a drum roll.',text:'Window titles; the crammed taskbar.',
+  draw:()=>{let s=desk();const t=['Calculator','Alarm','Notes','Reminders','Timer','Converter','Clipboard','Color picker','Calendar','To-do','Weather','Stopwatch','Passwords'];
+    t.forEach((n,i)=>{const x=8+(i%7)*40+(i>6?20:0),y=10+(i%4)*24+(i>6?14:0);s+=win(x,y,66,52,n,lines(x+5,y+14,56,5,7))});
+    s+=taskbar(15,{size:7,gap:1.4})+arrow('M28 156 L80 156')+arrow('M292 156 L222 156')+note(150,159,'15 icons, squeezing',7,'middle');return s}},
+ {act:1,dur:4,title:'Meltdown',
+  action:'The tray memory meter hits 97% and turns red. "Not responding" dialogs stack up. Windows wobble in heat haze, the taskbar catches fire, and the cursor turns into a spinner.',
+  camera:'Slow Dutch tilt with heat distortion.',sound:'Fan whine rising, alarm beeps; music distorts, then cuts to silence.',text:'"97%", "Not responding" ×5.',
+  draw:()=>{let s=desk(true);[[10,14,-6],[70,30,4],[150,12,-3],[220,36,7],[40,80,5],[190,84,-5]].forEach(([x,y,r],i)=>s+=win(x,y,74,54,['Notes','Timer','Calendar','Weather','Clipboard','To-do'][i],lines(x+5,y+14,62,5,7),{rot:r}));
+    for(let i=0;i<5;i++)s+=`<g><rect x="${96+i*7}" y="${60+i*7}" width="104" height="30" rx="2" class="card" style="stroke:var(--hot);stroke-width:1"/><text x="${101+i*7}" y="${72+i*7}" class="ui" style="font-size:5.5px;font-weight:600">App is not responding</text><rect x="${168+i*7}" y="${78+i*7}" width="26" height="8" rx="1.5" class="tb"/></g>`;
+    s+=heat(30,150,4)+heat(250,150,4)+taskbar(15,{size:7,gap:1.4,hot:[0,2,3,5,7,8,10,12,14],ram:97})+flames(0,250,165,16);
+    s+=`<circle cx="214" cy="140" r="5" style="fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:4 3"/>`+note(222,143,'spinner',6);return s}},
+ {act:2,dur:2,title:'One cool icon',
+  action:'Extreme close-up on the taskbar. Among red, overheating icons, one small Wheelie icon glows teal and breathes calmly. The cursor pushes through and clicks it.',
+  camera:'Crash-zoom into the taskbar, shallow focus.',sound:'Silence, then one clean "tick".',text:'None.',
+  draw:()=>{let s=desk(true)+`<rect class="tb" x="0" y="96" width="320" height="84"/>`;
+    for(let i=0;i<7;i++){const x=8+i*44;if(i===4)continue;s+=`<rect x="${x}" y="116" width="34" height="34" rx="6" class="ico-hot" style="opacity:.85"/>`+heat(x+6,112,3);}
+    s+=`<circle cx="201" cy="133" r="30" class="tealsoft" style="opacity:.5"/><circle cx="201" cy="133" r="24" style="fill:none;stroke:var(--teal);stroke-dasharray:2 3"/>`+wheelie(201,133,16,{armL:false,armR:false})+cursor(214,142,1.6)+note(232,92,'tick.',11)+cam(150,96,104,74,'FOCUS');return s}},
+ {act:2,dur:3,title:'Extinguisher',
+  action:'Wheelie rolls up out of the taskbar, skids to a stop, pulls out a fire extinguisher and blasts foam across the screen. The flames go out.',
+  camera:'Low angle on Wheelie. Foam fills the frame for a whiteout wipe.',sound:'Tire screech, extinguisher whoosh, music drops back in.',text:'None.',
+  draw:()=>{let s=desk(true)+taskbar(15,{size:7,gap:1.4,hot:[0,2,3,5,7,8,10,12,14],ram:97})+flames(150,320,165,14);
+    s+=arrow('M40 172 Q50 120 78 104')+wheelie(92,104,28,{mood:'determined',armR:[22,-6]});
+    s+=`<rect x="122" y="82" width="11" height="26" rx="3" class="hot"/><rect x="124" y="77" width="7" height="6" class="ink"/><path class="ln" style="stroke-width:1.6" d="M131 80 q10 -6 18 -2"/>`;
+    [[170,74,14],[195,90,18],[226,76,16],[252,104,20],[286,86,22],[210,126,16],[262,140,18],[300,130,16],[180,108,10]].forEach(([x,y,r])=>s+=`<circle class="foam" cx="${x}" cy="${y}" r="${r}"/>`);
+    s+=note(178,40,'FWOOSH',14)+note(20,50,'screech',8);return s}},
+ {act:2,dur:3,title:'ID check',
+  action:'Foam clears. The frozen, singed windows hang still. Wheelie sweeps a scan beam across them and each gets a tag: CALCULATOR ✓, NOTES ✓, ALARM ✓, TIMER ✓ and on.',
+  camera:'Lateral track following the beam.',sound:'One scanner beep per tag.',text:'The ID tags.',
+  draw:()=>{let s=desk();const W=[[120,14,'Calculator'],[206,22,'Notes'],[132,78,'Alarm'],[226,92,'Timer'],[168,124,'Clipboard']];
+    s+=`<path d="M58 104 L320 0 L320 180 L58 112 Z" class="tealsoft" style="opacity:.55"/>`;
+    W.forEach(([x,y,n])=>{s+=win(x,y,70,44,n,lines(x+5,y+14,58,4,7));s+=`<rect x="${x+8}" y="${y+18}" width="${n.length*4.2+16}" height="11" rx="5.5" class="teal"/><text x="${x+14}" y="${y+25.8}" class="card" style="font:700 5.6px var(--f-mono);fill:var(--card)">${n.toUpperCase()} ✓</text>`});
+    s+=wheelie(44,108,22,{armR:[14,-8]})+taskbar(15,{size:7,gap:1.4})+arrow('M140 170 L260 170');return s}},
+ {act:2,dur:4,title:'Fusion',
+  action:'Wheelie spins up like a tire. A vortex pulls every window in and each crumples into its icon. The icons orbit Wheelie on a helix, compress into one glowing ball, flash, and unfold into the wheel. One icon is left on the taskbar and the memory meter drains to green.',
+  camera:'Orbit around Wheelie as the helix tightens.',sound:'Whoosh building to a bass hit on the flash.',text:'The memory meter.',
+  draw:()=>{let s=desk();s+=`<path class="mv" d="M160 30 C 250 30 250 140 160 140 C 90 140 90 50 160 52 C 215 54 215 120 160 120 C 125 120 125 72 160 74"/>`;
+    for(let i=0;i<10;i++){const a=i/10*Math.PI*2,rx=78-i*3,ry=40-i*1.5;s+=`<rect x="${f(160+Math.cos(a)*rx-5)}" y="${f(90+Math.sin(a)*ry-5)}" width="10" height="10" rx="2" class="${i%3?'ico':'ico-teal'}"/>`;}
+    s+=`<path class="wbox" d="M14 20 l40 4 l-6 26 l-34 -8 z"/><path class="wbox" d="M268 30 l36 -4 l2 30 l-34 2 z"/><path class="wbox" d="M270 112 l34 6 l-8 24 l-30 -10 z"/>`+arrow('M56 36 Q90 50 104 64')+arrow('M266 44 Q236 56 222 66')+arrow('M266 124 Q240 120 222 112');
+    s+=`<circle cx="160" cy="90" r="30" class="tealsoft" style="opacity:.6"/>`+wheelie(160,90,22,{armL:false,armR:false,spin:.3});
+    s+=taskbar(1,{teal:0,ram:12})+note(212,150,'97% → 12%',8);return s}},
+ {act:3,dur:4,title:'The wheel',
+  action:'The wheel sits on a calm desktop, tilted slightly in 3D. Its eight slots light up clockwise: Calculator, Notes, Alarm, Reminders, Timer, Converter, Clipboard, To-do. Wheelie\'s face sits in the hub.',
+  camera:'Slow orbit that settles face-on.',sound:'One ratchet click per slot.',text:'Slot labels.',
+  draw:()=>desk()+`<g transform="translate(160 84) scale(1 .9) translate(-160 -84)">${wheelUI(160,84,64,{on:2})}</g>`+arrow('M222 28 A74 70 0 0 1 238 110')+note(242,40,'click, click,',8)+note(246,52,'click…',8)+taskbar(1,{teal:0,ram:12})},
+ {act:3,dur:4,title:'Every tool in one',
+  action:'The cursor picks the Calculator slot. It slides out and unfolds into the full calculator. A flick turns the wheel and Notes unfolds, then Alarm.',
+  camera:'Follow the slot as it extends; whip between tools.',sound:'A mechanical slide-out per tool.',text:'Content inside each tool: a sum, a note, 10:30.',
+  draw:()=>desk()+wheelUI(74,86,50,{on:0})+`<path d="M86 40 L176 24 L176 150 L98 62 Z" class="tealsoft" style="opacity:.5"/>`+win(176,24,112,126,'Calculator',calcBody(176,24,112,126,'1,284.50'))+cursor(78,52)+win(232,10,60,26,'Notes','',{ghost:1})+win(262,40,52,26,'Alarm','',{ghost:1})+arrow('M224 18 Q216 14 212 22')+note(120,170,'flick → Notes → Alarm',8,'middle')},
+ {act:3,dur:3,title:'Offline',
+  action:'Wheelie snips the network cable with scissors. The tray Wi-Fi icon gets an X. Wheelie keeps working: a note is typed and a small drive icon fills with "Saved on this PC".',
+  camera:'Medium shot, Wheelie in the foreground.',sound:'Scissor snip; a happy chirp on save.',text:'"No internet", "Saved on this PC".',
+  draw:()=>{let s=desk()+`<path class="ln" style="stroke-width:2.2" d="M0 22 C40 22 60 40 74 56"/><path class="ln" style="stroke-width:2.2" d="M84 66 C100 80 110 90 114 104"/>`;
+    s+=note(64,52,'snip',9)+wheelie(122,118,24,{armL:[10,-30]})+`<path class="ln" style="stroke-width:1.4" d="M98 92 l-14 -24 M104 90 l-26 -16"/><circle cx="96" cy="94" r="3" style="fill:none;stroke:var(--ink)"/><circle cx="102" cy="96" r="3" style="fill:none;stroke:var(--ink)"/>`;
+    s+=win(172,26,126,84,'Notes',lines(178,40,112,6,8,'groceries, call mum…'))+`<g><rect x="200" y="118" width="70" height="22" rx="3" class="tealsoft" style="stroke:var(--teal)"/><rect x="205" y="123" width="12" height="12" rx="2" class="teal"/><text x="222" y="131.5" class="ui" style="font-size:5.4px;font-weight:600">Saved on this PC</text></g>`;
+    s+=taskbar(1,{teal:0,ram:12})+`<path class="ln" d="M242 176 q5 -5 10 0 M244 178 q3 -3 6 0"/><path class="hotln" style="stroke-width:1.4" d="M240 167 l14 10 M254 167 l-14 10"/>`+note(214,162,'No internet',6.5);return s}},
+ {act:3,dur:4,title:'For the nerds',
+  action:'Crash-zoom into a memory graph. The old fifteen-app line towers, then falls off a cliff to a flat Wheelie line near zero. A counter rolls down from 2.4 GB to Wheelie\'s real figure. Wheelie peeks in wearing nerd glasses.',
+  camera:'Crash zoom, then hold.',sound:'Counter ticks; a "ting" off the glasses.',text:'"For the nerds", memory numbers.',
+  draw:()=>{let s=desk()+win(18,14,250,140,'Memory','');
+    for(let i=0;i<5;i++)s+=`<line x1="30" x2="258" y1="${36+i*24}" y2="${36+i*24}" style="stroke:var(--line);stroke-width:.6"/>`;
+    s+=`<path class="hotln" style="stroke-width:1.8" d="M30 60 L50 48 L70 54 L90 40 L110 46 L126 38 L134 140 "/><path class="tealln" style="stroke-width:2.2" d="M134 140 L258 140"/>`;
+    s+=note(36,30,'For the nerds:',9)+`<text x="150" y="70" class="mn" style="font-size:9px;fill:var(--hot);text-decoration:line-through">2.4 GB</text><text x="150" y="98" class="mn" style="font-size:22px;fill:var(--teal);font-weight:500">[xx] MB</text>`+note(152,132,'Wheelie',7)+note(60,132,'15 apps',7);
+    s+=wheelie(286,124,26,{glasses:1,armL:[14,-14]})+note(272,88,'ting!',8);return s}},
+ {act:3,dur:3,title:'Launch anything',
+  action:'A Launch slot fires three apps: browser, code editor, music player. Each window lands neatly and its icon slides into the taskbar. The calm opposite of Act 1.',
+  camera:'Locked, clean composition.',sound:'Three clean launches on the beat.',text:'App names.',
+  draw:()=>desk()+wheelUI(72,88,48,{labels:['Calc','Notes','Alarm','Launch','Timer','Convert','Clip','To-do'],on:3})+arrow('M118 70 Q150 30 172 30')+arrow('M120 90 L172 86')+arrow('M116 108 Q150 140 172 136')+win(176,12,120,46,'Browser',lines(182,26,108,3,7))+win(176,64,120,46,'Code editor',lines(182,78,90,4,7))+win(176,116,120,40,'Music',`<circle cx="194" cy="138" r="8" class="tb"/>`+lines(208,132,80,2,7))+taskbar(4,{teal:0})},
+ {act:3,dur:5,title:'Make it yours',
+  action:'A ninth ghost slot appears with a "+". A tool definition types itself in a code window. Wheelie, holding a wrench, builds the new icon and snaps it into the wheel. A star and a fork burst out: open source.',
+  camera:'Push in on the snap.',sound:'Typing, wrench clank, snap.',text:'The code snippet, "Open source".',
+  draw:()=>{let s=desk()+wheelUI(98,88,62,{labels:[...TOOLS,'+'],ghost:[8]});
+    s+=win(186,16,124,76,'my-tool.json',`<text x="192" y="34" class="mn" style="font-size:5.6px"><tspan x="192">{</tspan><tspan x="196" dy="8">"name": "Pomodoro",</tspan><tspan x="196" dy="8">"icon": "tomato.svg",</tspan><tspan x="196" dy="8">"run": "./pomodoro.js"</tspan><tspan x="192" dy="8">}</tspan></text>`);
+    s+=wheelie(238,128,20,{armL:[18,-12]})+`<path class="ln" style="stroke-width:2" d="M212 118 l-12 -8"/><rect x="186" y="98" width="14" height="14" rx="3" class="hot"/>`+arrow('M184 104 Q168 92 150 62');
+    s+=`<path d="M282 112 l3 7 l7 .6 l-5.4 4.6 l1.8 7 l-6.4 -3.8 l-6.4 3.8 l1.8 -7 l-5.4 -4.6 l7 -.6 z" class="teal"/>`+note(270,150,'Open source',8)+taskbar(1,{teal:0});return s}},
+ {act:4,dur:4,title:'Alt + Space',
+  action:'Two giant 3D keycaps, Alt and Space, drop in and press down together. The wheel pops onto a fresh desktop instantly.',
+  camera:'Low angle on the keys, then cut to the pop.',sound:'Heavy keyboard thunk, then a pop.',text:'The keycaps.',
+  draw:()=>{const key=(x,y,w,t)=>`<path d="M${x} ${y} l8 -10 h${w} l-8 10 z" class="tb" style="stroke:var(--ink);stroke-width:.9"/><path d="M${x+w} ${y} l8 -10 v26 l-8 10 z" class="ico" style="stroke:var(--ink);stroke-width:.9"/><rect x="${x}" y="${y}" width="${w}" height="26" class="card" style="stroke:var(--ink);stroke-width:1.1"/><text x="${x+w/2}" y="${y+17}" text-anchor="middle" class="ui" style="font-size:10px;font-weight:600">${t}</text>`;
+    let s=desk()+`<g transform="translate(160 58) scale(.55) translate(-160 -58)">${wheelUI(160,58,60,{showLabels:false})}</g>`;
+    for(let i=0;i<10;i++){const a=i/10*Math.PI*2;s+=`<line class="tealln" x1="${f(160+Math.cos(a)*40)}" y1="${f(58+Math.sin(a)*40)}" x2="${f(160+Math.cos(a)*48)}" y2="${f(58+Math.sin(a)*48)}"/>`}
+    s+=key(62,118,48,'Alt')+note(126,136,'+',16)+key(146,118,112,'Space')+arrow('M86 96 L86 110')+arrow('M202 96 L202 110')+note(268,30,'POP',12);return s}},
+ {act:4,dur:3,title:'More rolling in',
+  action:'The wheel spins and new greyed slots roll in from the edge of the screen, each marked "soon".',
+  camera:'Wide.',sound:'Rolling, rising chime.',text:'"More tools rolling in".',
+  draw:()=>{let s=desk()+wheelUI(120,90,62,{})+arrow('M60 32 A78 78 0 0 1 180 32');
+    [[220,52],[256,88],[222,124],[286,128]].forEach(([x,y],i)=>s+=`<rect x="${x}" y="${y}" width="28" height="28" rx="5" class="card" style="stroke:var(--muted);stroke-dasharray:2 1.5"/><text x="${x+14}" y="${y+18}" text-anchor="middle" class="skm" style="font-size:7px">soon</text>`);
+    s+=arrow('M310 70 L292 84')+note(204,32,'More tools rolling in',9)+taskbar(1,{teal:0});return s}},
+ {act:4,dur:3,title:'Get Wheelie',
+  action:'On a dark screen Wheelie rolls across and its tire tracks spell "Wheelie". Below: "Free download · Windows". macOS and Linux sit ghosted with "coming soon". Wheelie winks; cut to the long video.',
+  camera:'Static end card.',sound:'Final hit, music tail.',text:'Name, download line, platform badges.',
+  draw:()=>{let s=`<rect class="scr-dark" x="0" y="0" width="320" height="180"/>`;
+    s+=`<path d="M18 92 C60 70 90 110 130 86" style="fill:none;stroke:#3b424d;stroke-width:6;stroke-dasharray:2 2"/>`;
+    s+=`<text x="148" y="94" text-anchor="middle" style="font:800 38px var(--f-display);fill:#f2f4f7;letter-spacing:-1px">Wheelie</text>`;
+    s+=`<rect x="92" y="114" width="112" height="20" rx="10" style="fill:#2fcfb3"/><text x="148" y="127" text-anchor="middle" style="font:600 7px var(--f-body);fill:#0b0d10">Free download · Windows</text>`;
+    s+=`<text x="148" y="150" text-anchor="middle" style="font:500 6px var(--f-mono);fill:#6b7584">macOS · Linux — coming soon</text>`;
+    s+=`<g style="--card:#f2f4f7;--ink:#0b0d10;--teal:#2fcfb3">${wheelie(288,86,24,{mood:'wink',armL:false,armR:false,spin:.5})}</g><path d="M258 72 h-8 M256 86 h-12 M258 100 h-8" style="stroke:#6b7584;stroke-width:1.2;stroke-linecap:round"/>`;return s}}
+];
+
+/* timing */
+let t=0;SHOTS.forEach((s,i)=>{s.n=i+1;s.start=t;t+=s.dur;s.end=t});
+const TOTAL=t;
+const tc=sec=>`${Math.floor(sec/60)}:${String(Math.floor(sec%60)).padStart(2,'0')}`;
+
+/* timeline */
+(function(){
+  const el=document.getElementById('timeline');
+  const acts=ACTS.map(a=>{const d=SHOTS.filter(s=>s.act===a.id).reduce((x,s)=>x+s.dur,0);return `<div style="flex:${d}">Act ${a.id} · ${a.name}</div>`}).join('');
+  const shots=SHOTS.map(s=>`<a href="#shot-${s.n}" class="a${s.act}" style="flex:${s.dur}" title="${s.n}. ${s.title} (${tc(s.start)}–${tc(s.end)})">${s.n}</a>`).join('');
+  const ticks=[0,15,27,50,60].map(x=>`<span style="left:${x/TOTAL*100}%">${tc(x)}</span>`).join('');
+  el.innerHTML=`<div class="acts">${acts}</div><div class="shots">${shots}</div><div class="ticks">${ticks}</div>`;
+})();
+
+/* panels */
+document.getElementById('acts').innerHTML=ACTS.map(a=>`
+  <section class="act" id="act-${a.id}">
+    <div class="act-head"><p class="eyebrow">Act ${a.id} · ${a.range}</p><h2>${a.name}</h2><p>${a.intent}</p></div>
+    <div class="grid">${SHOTS.filter(s=>s.act===a.id).map(s=>`
+      <article class="panel" id="shot-${s.n}">
+        <div class="ph"><h3><span class="shotno">SH ${String(s.n).padStart(2,'0')}</span>${s.title}</h3><span class="mono">${tc(s.start)}–${tc(s.end)} · ${s.dur}s</span></div>
+        <div class="frame">${svg(s.draw(),'Sketch of shot '+s.n+': '+s.title)}</div>
+        <dl class="notes"><dt>Action</dt><dd>${s.action}</dd><dt>Camera</dt><dd>${s.camera}</dd><dt>Sound</dt><dd>${s.sound}</dd><dt>On screen</dt><dd>${s.text}</dd></dl>
+      </article>`).join('')}</div>
+  </section>`).join('');
+
+/* design sheets */
+document.getElementById('charSheet').innerHTML=svg(desk()+
+  wheelie(48,86,30,{})+note(48,140,'neutral',8,'middle')+
+  wheelie(124,86,30,{mood:'wide',armL:[16,-26],armR:[16,-26]})+note(124,140,'alarmed',8,'middle')+
+  wheelie(200,86,30,{mood:'determined',armR:[24,-6]})+`<rect x="232" y="66" width="10" height="24" rx="3" class="hot"/>`+note(200,140,'hero',8,'middle')+
+  wheelie(276,86,30,{glasses:1})+note(276,140,'nerd',8,'middle')+note(16,26,'Wheelie · turnaround of moods',9)+note(16,166,'tire = teal brand color · face lives in the hub',7,'start','skm'),'Wheelie character mood sheet');
+document.getElementById('wheelSheet').innerHTML=svg(desk()+wheelUI(110,92,72,{on:0})+cursor(124,30)+
+  note(196,40,'1. Alt + Space',8)+note(196,58,'2. wheel opens at cursor',8)+note(196,76,'3. hover a slot',8)+note(196,94,'4. click: tool slides out',8)+note(196,112,'5. Esc: wheel rolls away',8)+note(196,140,'8 slots · hub = Wheelie',7,'start','skm'),'Wheel UI with eight tool slots');
+
+/* animatic */
+(function(){
+  const ov=document.getElementById('ov'),stage=document.getElementById('ovStage'),bar=document.getElementById('ovBar'),
+    tcEl=document.getElementById('ovTc'),ti=document.getElementById('ovTitle'),tx=document.getElementById('ovText'),pause=document.getElementById('ovPause');
+  let now=0,last=0,playing=false,raf=0,cur=-1,opener=null;
+  function show(i){if(i===cur)return;cur=i;const s=SHOTS[i];stage.style.opacity=.2;
+    requestAnimationFrame(()=>{stage.innerHTML=svg(s.draw(),s.title);ti.textContent=`${s.n}. ${s.title}`;tx.textContent=s.action;stage.style.opacity=1;});}
+  function frame(ts){if(!playing)return;if(last)now+=(ts-last)/1000;last=ts;
+    if(now>=TOTAL){now=TOTAL;stop();}
+    render();if(playing)raf=requestAnimationFrame(frame);}
+  function render(){const i=Math.max(0,SHOTS.findIndex(s=>now<s.end)===-1?SHOTS.length-1:SHOTS.findIndex(s=>now<s.end));show(i);
+    bar.style.width=(now/TOTAL*100)+'%';tcEl.textContent=tc(now);}
+  function play(){if(now>=TOTAL)now=0;playing=true;last=0;pause.textContent='Pause';raf=requestAnimationFrame(frame);}
+  function stop(){playing=false;cancelAnimationFrame(raf);pause.textContent='Play';}
+  function jump(d){const i=Math.min(SHOTS.length-1,Math.max(0,cur+d));now=SHOTS[i].start+.001;render();}
+  document.getElementById('playBtn').onclick=e=>{opener=e.currentTarget;ov.hidden=false;now=0;cur=-1;render();play();pause.focus();};
+  pause.onclick=()=>playing?stop():play();
+  document.getElementById('ovPrev').onclick=()=>jump(-1);
+  document.getElementById('ovNext').onclick=()=>jump(1);
+  const close=()=>{stop();ov.hidden=true;opener&&opener.focus();};
+  document.getElementById('ovClose').onclick=close;
+  document.addEventListener('keydown',e=>{if(ov.hidden)return;if(e.key==='Escape')close();else if(e.key==='ArrowRight')jump(1);else if(e.key==='ArrowLeft')jump(-1);else if(e.key===' '){e.preventDefault();playing?stop():play();}});
+})();
+</script>
