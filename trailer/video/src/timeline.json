@@ -1,0 +1,66 @@
+{
+  "fps": 60,
+  "total": 3600,
+  "bpm": 120,
+  "act1": {
+    "invoiceToast": 30,
+    "calcClick": 90,
+    "keystrokes": [110, 118, 126, 134, 142, 150, 158, 166],
+    "chatToast": 180,
+    "alarmClick": 236,
+    "windows": [
+      {"app": "calc",       "x": 700,  "y": 230, "w": 380, "h": 540, "open": 96},
+      {"app": "alarm",      "x": 1130, "y": 280, "w": 420, "h": 410, "open": 240},
+      {"app": "notes",      "x": 250,  "y": 150, "w": 560, "h": 430, "open": 300},
+      {"app": "reminders",  "x": 400,  "y": 540, "w": 420, "h": 390, "open": 345},
+      {"app": "timer",      "x": 1360, "y": 560, "w": 380, "h": 370, "open": 390},
+      {"app": "converter",  "x": 1010, "y": 110, "w": 400, "h": 310, "open": 480},
+      {"app": "clipboard",  "x": 110,  "y": 500, "w": 360, "h": 410, "open": 498},
+      {"app": "colorpicker","x": 1480, "y": 130, "w": 360, "h": 380, "open": 516},
+      {"app": "calendar",   "x": 560,  "y": 80,  "w": 460, "h": 390, "open": 534},
+      {"app": "todo",       "x": 1180, "y": 610, "w": 380, "h": 350, "open": 552},
+      {"app": "weather",    "x": 70,   "y": 70,  "w": 380, "h": 300, "open": 570},
+      {"app": "stopwatch",  "x": 820,  "y": 560, "w": 360, "h": 310, "open": 588},
+      {"app": "passwords",  "x": 1500, "y": 470, "w": 360, "h": 310, "open": 606},
+      {"app": "translate",  "x": 300,  "y": 690, "w": 400, "h": 280, "open": 624}
+    ],
+    "dialogs": [690, 708, 726, 744, 762],
+    "meltdownStart": 660,
+    "silence": 900
+  },
+  "act2": {
+    "crashZoom": 900,
+    "click": 1000,
+    "emerge": 1005,
+    "screech": 1040,
+    "extinguisher": 1080,
+    "foamStart": 1100,
+    "whiteout": 1200,
+    "scanStart": 1250,
+    "tagEvery": 12,
+    "fusionStart": 1380,
+    "flash": 1575
+  },
+  "act3": {
+    "start": 1620,
+    "slotEvery": 10,
+    "toolsStart": 1860,
+    "toolSwitch": [1860, 1940, 2020],
+    "offlineStart": 2100,
+    "snip": 2160,
+    "saved": 2236,
+    "nerdsStart": 2280,
+    "launchStart": 2520,
+    "launches": [2580, 2610, 2640],
+    "customStart": 2700,
+    "snap": 2905
+  },
+  "act4": {
+    "start": 3000,
+    "keyDrop": 3010,
+    "keyPress": 3090,
+    "moreStart": 3240,
+    "endStart": 3420,
+    "wink": 3540
+  }
+}
